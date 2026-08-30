@@ -613,41 +613,82 @@ function monthLabel(k){ const m = MONTHS.find(x=>x.key===k); return m? m.label :
 function monthIndex(k){ return MONTHS.findIndex(x=>x.key===k); }
 function yr2(label){ return (label||'').replace(/(\d{4})/g, y=>y.slice(2)); }
 
+// ===================== SYNC KE GOOGLE SHEETS =====================
+const CLOUD_URL = 'https://script.google.com/macros/s/AKfycbx46aUZRTp_r_KEyjXqoYuaFL3Gck92AW3d8djGvs8lpaj5pluUdOccv9-jQHHWZ2Rmpg/exec';
+
+async function cloudPull(sheet){
+  try{
+    const res = await fetch(CLOUD_URL + '?sheet=' + sheet + '&t=' + Date.now());
+    const json = await res.json();
+    return (json && json.data) ? json.data : null;
+  }catch(e){
+    console.warn('Gagal ambil data cloud ('+sheet+'):', e);
+    return null;
+  }
+}
+function cloudPush(sheet, data){
+  try{
+    fetch(CLOUD_URL, { method:'POST', body: JSON.stringify({sheet, data}) }).catch(e=>console.warn('Gagal simpan ke cloud ('+sheet+'):', e));
+  }catch(e){ console.warn('Gagal simpan ke cloud ('+sheet+'):', e); }
+}
+function cloudPush(sheet, data){
+  try{
+    fetch(CLOUD_URL, { method:'POST', body: JSON.stringify({sheet, data}) }).catch(e=>console.warn('Gagal simpan ke cloud ('+sheet+'):', e));
+  }catch(e){ console.warn('Gagal simpan ke cloud ('+sheet+'):', e); }
+}
+
 // ===================== STATE =====================
 const STORAGE_KEY = 'kas3b_2026_2027_v1';
 let state = null;
 
 function loadState(){
   const seed = JSON.parse(document.getElementById('seed-data').textContent);
+  let candidate = null;
   const saved = localStorage.getItem(STORAGE_KEY);
-  if(saved){
-    try{
-      const candidate = JSON.parse(saved);
-      // Jangan pernah menerima state kosong yang terbentuk karena versi revisi.
-      const valid = candidate && Array.isArray(candidate.students) && candidate.students.length > 0
-        && Array.isArray(candidate.pemasukan) && Array.isArray(candidate.pengeluaran)
-        && (candidate.pemasukan.length + candidate.pengeluaran.length > 0);
-      if(valid){
-        state = candidate;
-        backfillKeterangan();
-        return;
-      }
-    }catch(e){ /* gunakan seed asli */ }
+  if(saved){ try{ candidate = JSON.parse(saved); }catch(e){ candidate = null; } }
+  // Jangan pernah menerima state kosong yang terbentuk karena versi revisi.
+  const valid = candidate && Array.isArray(candidate.students) && candidate.students.length > 0
+    && Array.isArray(candidate.pemasukan) && Array.isArray(candidate.pengeluaran)
+    && (candidate.pemasukan.length + candidate.pengeluaran.length > 0);
+  if(valid){
+    state = candidate;
+  } else {
+    state = {
+      students: seed.students,
+      pemasukan: seed.pemasukan,
+      pengeluaran: seed.pengeluaran,
+      nextMasukId: seed.pemasukan.length ? Math.max(...seed.pemasukan.map(p=>p.id))+1 : 1,
+      nextKeluarId: seed.pengeluaran.length ? Math.max(...seed.pengeluaran.map(p=>p.id))+1 : 1,
+    };
   }
-  state = {
-    students: seed.students,
-    pemasukan: seed.pemasukan,
-    pengeluaran: seed.pengeluaran,
-    nextMasukId: seed.pemasukan.length ? Math.max(...seed.pemasukan.map(p=>p.id))+1 : 1,
-    nextKeluarId: seed.pengeluaran.length ? Math.max(...seed.pengeluaran.map(p=>p.id))+1 : 1,
-  };
   backfillKeterangan();
-  saveState();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 function backfillKeterangan(){
   state.pemasukan.forEach(p=>{ if(!p.keterangan) p.keterangan = 'Kas Bulanan'; });
 }
-function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  cloudPush('Kas', state);
+}
+// Sinkron diam-diam dari cloud setelah tampilan awal terlihat.
+async function refreshStateFromCloud(){
+  const cloud = await cloudPull('Kas');
+  const validCloud = cloud && Array.isArray(cloud.students) && cloud.students.length > 0
+    && Array.isArray(cloud.pemasukan) && Array.isArray(cloud.pengeluaran)
+    && (cloud.pemasukan.length + cloud.pengeluaran.length > 0);
+  if(validCloud){
+    if(JSON.stringify(cloud) !== JSON.stringify(state)){
+      state = cloud;
+      backfillKeterangan();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      renderAll();
+    }
+  } else {
+    // Cloud masih kosong (pertama kali dipakai) -> kirim data lokal saat ini sebagai data awal.
+    cloudPush('Kas', state);
+  }
+}
 
 // ===================== HELPERS =====================
 function rp(n){
@@ -1459,6 +1500,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('kTanggal').value = formatTanggalPendek(new Date());
   document.getElementById('kTanggal').readOnly = true;
   renderAll();
+  refreshStateFromCloud();
 });
 
 </script>
@@ -1499,7 +1541,9 @@ function switchBook(mode){
   const kasHeader=document.querySelector('header.top');
   const kasMode=document.getElementById('modeKasBtn'), tikMode=document.getElementById('modeTikBtn');
   if(mode==='tik'){
-    kasPanels.forEach(p=>p.style.display='none'); if(kasHeader)kasHeader.style.display='none'; tik.style.display='block'; kasMode.classList.remove('active'); tikMode.classList.add('active'); loadTik(); renderTik(); tikShow('rekap');
+    kasPanels.forEach(p=>p.style.display='none'); if(kasHeader)kasHeader.style.display='none'; tik.style.display='block'; kasMode.classList.remove('active'); tikMode.classList.add('active');
+    loadTikLocal(); renderTik(); tikShow('rekap');
+    refreshTikFromCloud();
   }else{
     tik.style.display='none'; if(kasHeader)kasHeader.style.display='flex'; kasPanels.forEach(p=>p.style.display=''); kasMode.classList.add('active'); tikMode.classList.remove('active'); showPanel('panel-rekap');
   }
@@ -1513,32 +1557,46 @@ function tikSeed(){
     nextKeluarId:2
   };
 }
-function loadTik(){
+function loadTikLocal(){
   const saved=localStorage.getItem(TIK_STORAGE_KEY);
-  if(saved){
-    try{
-      const x=JSON.parse(saved);
-      if(x&&Array.isArray(x.students)&&x.students.length){
-        /* Jika storage TIK lama kosong (pemasukan dan/atau pengeluaran), pulihkan dari sumber Excel yang tertanam. */
-        const needMasuk=!Array.isArray(x.pemasukan) || x.pemasukan.length===0;
-        const needKeluar=!Array.isArray(x.pengeluaran) || x.pengeluaran.length===0;
-        if(needMasuk || needKeluar){
-          const seeded=tikSeed();
-          if(needMasuk){ x.pemasukan=seeded.pemasukan; x.nextMasukId=seeded.nextMasukId; }
-          if(needKeluar){ x.pengeluaran=seeded.pengeluaran; x.nextKeluarId=seeded.nextKeluarId; }
-          else{ x.nextKeluarId=Math.max(1,Number(x.nextKeluarId)||1); }
-          tikState=x;
-          saveTik();
-          return;
-        }
-        tikState=x;
-        return;
-      }
-    }catch(e){}
+  let x=null;
+  if(saved){ try{ x=JSON.parse(saved); }catch(e){ x=null; } }
+  if(x&&Array.isArray(x.students)&&x.students.length){
+    /* Jika data TIK kosong (pemasukan dan/atau pengeluaran), pulihkan dari sumber Excel yang tertanam. */
+    const needMasuk=!Array.isArray(x.pemasukan) || x.pemasukan.length===0;
+    const needKeluar=!Array.isArray(x.pengeluaran) || x.pengeluaran.length===0;
+    if(needMasuk || needKeluar){
+      const seeded=tikSeed();
+      if(needMasuk){ x.pemasukan=seeded.pemasukan; x.nextMasukId=seeded.nextMasukId; }
+      if(needKeluar){ x.pengeluaran=seeded.pengeluaran; x.nextKeluarId=seeded.nextKeluarId; }
+      else{ x.nextKeluarId=Math.max(1,Number(x.nextKeluarId)||1); }
+    }
+    tikState=x;
+  } else {
+    tikState=tikSeed();
   }
-  tikState=tikSeed();saveTik();
+  localStorage.setItem(TIK_STORAGE_KEY, JSON.stringify(tikState));
 }
-function saveTik(){localStorage.setItem(TIK_STORAGE_KEY,JSON.stringify(tikState));}
+function saveTik(){
+  localStorage.setItem(TIK_STORAGE_KEY,JSON.stringify(tikState));
+  cloudPush('TIK', tikState);
+}
+// Sinkron diam-diam dari cloud setelah tampilan TIK terlihat.
+async function refreshTikFromCloud(){
+  const cloud = await cloudPull('TIK');
+  const validCloud = cloud && Array.isArray(cloud.students) && cloud.students.length > 0
+    && Array.isArray(cloud.pemasukan) && Array.isArray(cloud.pengeluaran)
+    && (cloud.pemasukan.length + cloud.pengeluaran.length > 0);
+  if(validCloud){
+    if(JSON.stringify(cloud) !== JSON.stringify(tikState)){
+      tikState = cloud;
+      localStorage.setItem(TIK_STORAGE_KEY, JSON.stringify(tikState));
+      renderTik();
+    }
+  } else {
+    cloudPush('TIK', tikState);
+  }
+}
 function tikShow(which){
   ['rekap','siswa','masuk','keluar'].forEach(k=>document.getElementById('tik-'+k).classList.remove('active','print-active'));
   document.getElementById('tik-'+which).classList.add('active','print-active');window.scrollTo({top:0,behavior:'smooth'});
