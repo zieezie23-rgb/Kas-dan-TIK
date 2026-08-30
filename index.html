@@ -39,6 +39,21 @@ section.panel.active{display:block;animation:fadeIn .25s ease}
 .field input, .field select{width:100%;padding:9px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);font-size:14px;color:var(--ink)}
 .field input:focus, .field select:focus{outline:none;border-color:var(--teal);background:#fff}
 .field select:disabled{background:#e8e5dc;color:#999;cursor:not-allowed;opacity:.8}
+.csel{position:relative}
+.csel select.csel-native{display:none}
+.csel-trigger{width:100%;text-align:left;padding:9px 30px 9px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);font-size:14px;color:var(--ink);cursor:pointer;position:relative;font-family:inherit;box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.csel-trigger::after{content:"";position:absolute;right:12px;top:44%;width:7px;height:7px;border-right:2px solid var(--ink-soft);border-bottom:2px solid var(--ink-soft);transform:translateY(-50%) rotate(45deg);transition:transform .15s ease}
+.csel-trigger.open::after{transform:translateY(-15%) rotate(-135deg)}
+.csel-trigger.placeholder{color:#9a9382}
+.csel-trigger:focus{outline:none;border-color:var(--teal)}
+.csel-trigger.disabled{background:#e8e5dc;color:#999;cursor:not-allowed;opacity:.8}
+.csel-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:30;background:#fff;border:1.5px solid var(--teal);border-radius:8px;box-shadow:var(--shadow);max-height:230px;overflow-y:auto;padding:4px}
+.csel-menu.show{display:block}
+.csel-opt{padding:8px 10px;border-radius:6px;font-size:13.5px;cursor:pointer;color:var(--ink)}
+.csel-opt:hover{background:var(--teal-tint)}
+.csel-opt.sel{background:var(--teal);color:#fff;font-weight:600}
+.csel-opt.disabled{color:#bbb;cursor:not-allowed}
+.cetak-break-before{page-break-before:always!important;break-before:page!important}
 #mNama option{font-size:13px}
 .field.readout input{background:var(--amber-tint);border-color:var(--amber);font-weight:600}
 .btn{border:none;cursor:pointer;padding:10px 18px;border-radius:8px;font-size:13.5px;font-weight:600;transition:all .15s ease;display:inline-flex;align-items:center;gap:6px}
@@ -77,6 +92,8 @@ tr.row-lunas, tr.row-lunas:hover{background:transparent}
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
 .kpi{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-left:4px solid var(--teal)}
 .kpi.amber{border-left-color:var(--amber)}
+.kpi.amber .lbl{font-weight:800;color:var(--ink)}
+.kpi.amber .val{font-weight:800}
 .kpi.coral{border-left-color:var(--coral)}
 .kpi .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);font-weight:600}
 .kpi .val{font-family:'Fraunces',Georgia,serif;font-size:24px;font-weight:600;color:var(--teal-dark);margin-top:4px}
@@ -126,7 +143,11 @@ footer.app-footer{text-align:center;color:var(--ink-soft);font-size:11.5px;margi
 #panel-rekap table th:first-child, #panel-rekap table td:first-child{text-align:center}
 #panel-rekap table td:nth-child(3){color:#c0392b;font-weight:600}
 .btn-row.rekap-actions{display:flex;gap:8px;flex-wrap:wrap}
-.btn-export-outline{background:#fff!important;color:var(--teal)!important;border:1px solid var(--teal)!important}
+.btn-export-outline{background:#fff!important;color:var(--teal-dark)!important;border:1.5px solid var(--teal-dark)!important}
+.btn-print-outline{background:var(--teal-tint)!important;color:var(--teal-dark)!important;border:1.5px solid var(--teal-dark)!important}
+.btn-share-outline{background:#fff!important;color:#8a6416!important;border:1.5px solid #8a6416!important}
+body.capturing-share .no-print{display:none!important}
+body.capturing-share .card{box-shadow:none!important}
 @media print {@page{ size: A4 portrait; margin: 8mm; }}
 @media (max-width: 640px){
 .top-stats{display:none}
@@ -160,7 +181,8 @@ nav.tabs button[data-tab="rekap"]{order:0}
 .siswa-action-row .tambah-siswa-row{display:flex!important;align-items:center!important;justify-content:flex-end!important;margin:0 0 0 auto!important}
 .siswa-action-row .tambah-siswa-row .btn-row{margin:0!important}
 .rekap-actions{display:flex!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px!important;flex-wrap:nowrap!important;justify-content:space-between!important;align-items:center!important;margin-top:14px!important}
-.rekap-actions>.btn, .rekap-actions .print-menu-wrap>.btn{width:auto!important;min-width:145px!important;flex:0 0 auto!important}
+.rekap-actions>.btn, .rekap-actions>.print-menu-wrap{width:auto!important;min-width:145px!important;flex:1 1 0!important}
+.rekap-actions .print-menu-wrap>.btn{width:100%!important;min-width:0!important}
 #kasLegacyNav{display:none!important}
 .mode-switch{display:flex;gap:10px;padding:6px;background:var(--paper-2);border:1px solid var(--line);border-radius:14px;margin:0 0 12px}
 .mode-btn{flex:1;border:0;background:var(--white);color:var(--ink-soft);font-weight:700;padding:12px;border-radius:10px;cursor:pointer}
@@ -182,7 +204,8 @@ input[readonly]{background:var(--paper-2);cursor:not-allowed}
 .rekap-actions .btn{font-size:11px;padding-left:5px;padding-right:5px}
 .form-action-row, .siswa-action-row{gap:8px!important}
 .form-action-row .btn, .siswa-action-row .btn{white-space:nowrap}
-.rekap-actions>.btn, .rekap-actions .print-menu-wrap>.btn{min-width:0!important;font-size:11px!important;padding:9px 12px!important}
+.rekap-actions>.btn, .rekap-actions>.print-menu-wrap{min-width:0!important;font-size:11px!important;padding:9px 12px!important}
+.rekap-actions .print-menu-wrap>.btn{width:100%!important;font-size:11px!important;padding:9px 12px!important}
 .mode-switch{gap:6px}
 .mode-btn{font-size:12px;padding:10px}
 .tik-actions .btn{font-size:12px;padding:9px 12px}
@@ -202,11 +225,11 @@ body.printing-rekap-only #panel-rekap .btn-row, body.printing-bulanan #panel-bul
 #panel-siswa.print-active .card h2{font-size:10px!important;margin:0 0 2px!important}
 #panel-siswa.print-active .card .sub{display:none!important}
 #panel-siswa.print-active .tbl-wrap{max-height:none!important;overflow:visible!important;border:1px solid #999;width:100%!important}
-#tblSiswa{width:851px!important;max-width:none!important;margin:0!important;table-layout:fixed;border-collapse:collapse;transform:scaleX(.84);transform-origin:top left;margin-right:-136px!important}
-#tblSiswa th:nth-child(1), #tblSiswa td:nth-child(1){width:26px}
-#tblSiswa th:nth-child(2), #tblSiswa td:nth-child(2){width:140px}
-#tblSiswa th:nth-child(n+4):not(:last-child), #tblSiswa td:nth-child(n+4):not(:last-child){width:55px!important;min-width:55px!important;max-width:55px!important}
-#tblSiswa th:last-child, #tblSiswa td:last-child{width:38px!important;min-width:38px!important;max-width:38px!important}
+#tblSiswa{width:100%!important;max-width:100%!important;margin:0!important;table-layout:fixed;border-collapse:collapse}
+#tblSiswa th:nth-child(1), #tblSiswa td:nth-child(1){width:3.1%!important}
+#tblSiswa th:nth-child(2), #tblSiswa td:nth-child(2){width:16.5%!important}
+#tblSiswa th:nth-child(n+4):not(:last-child), #tblSiswa td:nth-child(n+4):not(:last-child){width:6.4%!important;min-width:0!important;max-width:none!important}
+#tblSiswa th:last-child, #tblSiswa td:last-child{display:none!important}
 #tblSiswa th, #tblSiswa td{padding:3px 3px;font-size:7.2px;line-height:1.15;border:1px solid var(--teal-dark)!important}
 #tblSiswa thead, #tblSiswa thead tr{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 #tblSiswa thead th{position:static;background:var(--teal-dark)!important;color:#fff!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
@@ -215,7 +238,7 @@ body.printing-rekap-only #panel-rekap .btn-row, body.printing-bulanan #panel-bul
 #tblSiswa .paid{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color:var(--teal)!important}
 #tblSiswa tbody td:nth-child(1), #tblSiswa tbody td:nth-child(2), #tblSiswa tbody td:nth-child(3){color:var(--teal-dark)!important}
 #tblSiswa td.paid-cell{background:#e8f4ee!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-#tblSiswa th:nth-child(3), #tblSiswa td:nth-child(3){width:80px!important;min-width:80px!important;max-width:80px!important;white-space:normal!important;overflow:hidden}
+#tblSiswa th:nth-child(3), #tblSiswa td:nth-child(3){width:9.4%!important;min-width:0!important;max-width:none!important;white-space:normal!important;overflow:hidden}
 #tblSiswa td:nth-child(3) .rp-cell{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:2px!important;width:100%!important;min-width:0!important;max-width:100%!important;white-space:nowrap!important;overflow:hidden!important;text-align:right!important;line-height:1.1!important}
 #tblSiswa td:nth-child(3) .rp-label{font-size:6.5px!important;flex:0 0 auto!important}
 #tblSiswa td:nth-child(3) .rp-value{font-size:6.5px!important;flex:0 0 auto!important;white-space:nowrap!important}
@@ -242,6 +265,7 @@ nav, .mode-switch, .no-print, .print-menu, button, input, select, textarea, .app
 section.panel{display:none!important;visibility:hidden!important;position:static!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
 section.panel.print-active{display:block!important;visibility:visible!important}
 .top, #tikApp .tik-top{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;width:100%!important;min-height:0!important;margin:0 0 4mm!important;padding:0 0 2.5mm!important;border-bottom:1px solid #666!important;box-shadow:none!important}
+body.printing-tik-rekap header.top:not(.tik-top), body.printing-tik-rincian header.top:not(.tik-top), body.printing-tik-all header.top:not(.tik-top){display:none!important}
 .top-title h1{font-size:15pt!important;margin:0!important;line-height:1.1!important}
 .top-title .eyebrow{display:none;font-size:7.5pt!important}
 .top-title .period{font-size:7.5pt!important;margin-top:1px}
@@ -274,6 +298,9 @@ body.printing-bulanan #panel-rekap, body.printing-bulanan #panel-siswa, body.pri
 body.printing-bulanan #panel-bulanan, body.printing-kas-all #panel-rekap, body.printing-kas-all #panel-masuk, body.printing-kas-all #panel-keluar, body.printing-kas-all #panel-bulanan{display:block!important;visibility:visible!important;width:100%!important;max-width:none!important}
 body.printing-kas-all #panel-rekap .rekap-actions, body.printing-kas-all #rekapKpiGrid{display:none!important}
 body.printing-kas-all #panel-siswa{display:block!important;visibility:visible!important;width:100%!important;max-width:none!important;break-before:avoid!important;page-break-before:avoid!important}
+body.printing-rekap-only #panel-rekap.print-active .kpi-grid, body.printing-kas-all #panel-rekap.print-active .kpi-grid{display:none!important;visibility:hidden!important;height:0!important;margin:0!important;padding:0!important;overflow:hidden!important}
+body.printing-tik-rekap #tik-rekap .kpi-grid, body.printing-tik-all #tik-rekap .kpi-grid{display:none!important}
+body.printing-kas-all #panel-bulanan.cetak-break-before, body.printing-kas-all #panel-masuk.cetak-break-before, body.printing-tik-all #tik-masuk.cetak-break-before{page-break-before:always!important;break-before:page!important}
 body.printing-tik-all #tikApp .panel.print-active{display:block!important;visibility:visible!important}
 body.printing-tik-all #tikApp .panel{width:100%!important;max-width:none!important}
 [style*="max-height"], [style*="overflow-y:auto"], [style*="overflow:auto"]{max-height:none!important;height:auto!important;overflow:visible!important}
@@ -466,7 +493,8 @@ button[onclick*="pemasukan"] span, button[onclick*="pengeluaran"] span, button[o
       </div>
       <div class="rekap-actions no-print">
         <button class="btn btn-ghost btn-export-outline" onclick="exportExcel()">Export ke Excel</button>
-        <div class="print-menu-wrap"><button class="btn btn-ghost" onclick="togglePrintMenu('kasPrintMenu')">🖨️ Cetak ▾</button><div id="kasPrintMenu" class="print-menu"><button onclick="cetakSemuaKas();togglePrintMenu('kasPrintMenu')">Cetak Semua</button><button onclick="cetakRekap();togglePrintMenu('kasPrintMenu')">Cetak Rekap</button><button onclick="cetakBulanan();togglePrintMenu('kasPrintMenu')">Cetak Bulanan</button><button onclick="cetakRincian();togglePrintMenu('kasPrintMenu')">Cetak Rincian</button></div></div>
+        <div class="print-menu-wrap"><button class="btn btn-ghost btn-print-outline" onclick="togglePrintMenu('kasPrintMenu')">🖨️ Cetak ▾</button><div id="kasPrintMenu" class="print-menu"><button onclick="cetakSemuaKas();togglePrintMenu('kasPrintMenu')">Cetak Semua</button><button onclick="cetakRekap();togglePrintMenu('kasPrintMenu')">Cetak Rekap</button><button onclick="cetakBulanan();togglePrintMenu('kasPrintMenu')">Cetak Bulanan</button><button onclick="cetakRincian();togglePrintMenu('kasPrintMenu')">Cetak Rincian</button></div></div>
+        <div class="print-menu-wrap"><button class="btn btn-ghost btn-share-outline" onclick="togglePrintMenu('kasShareMenu')">🔗 Bagikan ▾</button><div id="kasShareMenu" class="print-menu"><button onclick="shareRekap('kas','pdf')">Bagikan PDF</button><button onclick="shareRekap('kas','gambar')">Bagikan Gambar</button><button onclick="shareRekap('kas','teks')">Bagikan Teks</button></div></div>
       </div>
     </div>
   </section>
@@ -496,17 +524,18 @@ button[onclick*="pemasukan"] span, button[onclick*="pengeluaran"] span, button[o
     </header>
     <section class="panel active" id="tik-rekap">
       <div class="kpi-grid">
-        <div class="kpi kpi-link" onclick="tikShow('siswa')"><div class="lbl">Total Pemasukan</div><div class="val" id="tikStatMasuk">Rp 0</div></div>
+        <div class="kpi kpi-link" onclick="tikShow('masuk')"><div class="lbl">Total Pemasukan</div><div class="val" id="tikStatMasuk">Rp 0</div></div>
         <div class="kpi coral kpi-link" onclick="tikShow('keluar')"><div class="lbl">Total Pengeluaran</div><div class="val" id="tikStatKeluar">Rp 0</div></div>
         <div class="kpi amber"><div class="lbl">TIK Tersedia</div><div class="val" id="tikStatSaldo">Rp 0</div></div>
         <div class="kpi kpi-link" onclick="tikShow('siswa')"><div class="lbl">Data Siswa</div><div class="val" id="tikStatSiswa">0/0 Siswa</div></div>
       </div>
       <div class="card">
         <h2>Ringkasan Uang TIK Kelas 3B</h2>
-        <div class="tbl-wrap" style="max-height:none;"><table><thead><tr><th>Keterangan</th><th class="num">Uang Masuk</th><th class="num">Uang Keluar</th><th class="num">Tersedia</th></tr></thead><tbody id="tikRekapBody"></tbody></table></div>
+        <div class="tbl-wrap" style="max-height:none;"><table><thead><tr><th class="center">Keterangan</th><th class="num">Uang Masuk</th><th class="num">Uang Keluar</th><th class="num">Tersedia</th></tr></thead><tbody id="tikRekapBody"></tbody></table></div>
         <div class="rekap-actions tik-actions no-print">
-          <button class="btn btn-ghost" onclick="tikExportExcel()">Export ke Excel</button>
-          <div class="print-menu-wrap"><button class="btn btn-ghost" onclick="togglePrintMenu('tikPrintMenu')">🖨️ Cetak ▾</button><div id="tikPrintMenu" class="print-menu"><button onclick="tikPrint('all')">Cetak Semua</button><button onclick="tikPrint('rekap')">Cetak Rekap</button><button onclick="tikPrint('rincian')">Cetak Rincian</button></div></div>
+          <button class="btn btn-ghost btn-export-outline" onclick="tikExportExcel()">Export ke Excel</button>
+          <div class="print-menu-wrap"><button class="btn btn-ghost btn-print-outline" onclick="togglePrintMenu('tikPrintMenu')">🖨️ Cetak ▾</button><div id="tikPrintMenu" class="print-menu"><button onclick="tikPrint('all')">Cetak Semua</button><button onclick="tikPrint('rekap')">Cetak Rekap</button><button onclick="tikPrint('rincian')">Cetak Rincian</button></div></div>
+          <div class="print-menu-wrap"><button class="btn btn-ghost btn-share-outline" onclick="togglePrintMenu('tikShareMenu')">🔗 Bagikan ▾</button><div id="tikShareMenu" class="print-menu"><button onclick="shareRekap('tik','pdf')">Bagikan PDF</button><button onclick="shareRekap('tik','gambar')">Bagikan Gambar</button><button onclick="shareRekap('tik','teks')">Bagikan Teks</button></div></div>
         </div>
       </div>
     </section>
@@ -783,14 +812,16 @@ function fillMonthSelects(){
   const sampai = document.getElementById('mBulanSampai');
   const opts = '<option value="">-</option>' + MONTHS.map(m=>`<option value="${m.key}">${yr2(m.label)}</option>`).join('');
   dari.innerHTML = opts; sampai.innerHTML = opts;
+  refreshCustomSelect('mBulanDari'); refreshCustomSelect('mBulanSampai');
 }
 function fillStudentSelect(){
   const sel = document.getElementById('mNama');
   if(!sel) return;
   const current = sel.value;
   const students = [...state.students].sort((a,b)=>a.nama.localeCompare(b.nama,'id'));
-  sel.innerHTML = '<option value="">Pilih nama siswa...</option>' + students.map(s=>`<option value="${s.nama}">${s.nama}</option>`).join('');
+  sel.innerHTML = '<option value="">Pilih nama siswa...</option><option value="LAIN-LAIN">LAIN-LAIN</option>' + students.map(s=>`<option value="${s.nama}">${s.nama}</option>`).join('');
   if(students.some(s=>s.nama===current)) sel.value=current;
+  refreshCustomSelect('mNama');
 }
 function handleNamaMasukChange(){
   const nama = document.getElementById('mNama').value;
@@ -813,6 +844,7 @@ function handleNamaMasukChange(){
     if(!sampai.value) sampai.value = MONTHS[0].key;
     updateMasukReadout();
   }
+  refreshCustomSelect('mBulanDari'); refreshCustomSelect('mBulanSampai');
 }
 
 function computeJumlahBulan(){
@@ -877,6 +909,7 @@ function resetFormMasuk(){
   document.getElementById('mBulanSampai').disabled = false;
   document.getElementById('mKeterangan').value = 'Kas Bulanan';
   document.getElementById('mJumlah').value = '';
+  refreshCustomSelect('mNama'); refreshCustomSelect('mBulanDari'); refreshCustomSelect('mBulanSampai');
 }
 function editPemasukan(id){
   const p = state.pemasukan.find(x=>x.id===id);
@@ -891,6 +924,7 @@ function editPemasukan(id){
   document.getElementById('mJumlah').value = Number(p.jumlah||0).toLocaleString('id-ID');
   document.getElementById('mKeterangan').value = p.keterangan || '';
   document.getElementById('mKeterangan').placeholder = p.nama === 'LAIN-LAIN' ? 'Wajib diisi' : 'mis. bayar tunai';
+  refreshCustomSelect('mNama'); refreshCustomSelect('mBulanDari'); refreshCustomSelect('mBulanSampai');
   document.getElementById('formMasukTitle').textContent = 'Edit Pemasukan #'+id;
   document.getElementById('btnSubmitMasuk').textContent = 'Simpan Perubahan';
   document.getElementById('btnCancelMasuk').style.display = 'inline-flex';
@@ -1183,66 +1217,62 @@ function renderMonthTable(d){
   </table></div>`;
 }
 
-function cetakRekap(){
-  const panels=document.querySelectorAll('section.panel');
-  panels.forEach(p=>p.classList.remove('print-active'));
-  document.getElementById('panel-rekap').classList.add('print-active');
-  document.body.classList.add('printing-rekap-only');
-  window.print();
-  setTimeout(()=>{document.body.classList.remove('printing-rekap-only');panels.forEach(p=>p.classList.remove('print-active'));},700);
-}
-function cetakSemuaKas(){
-  const panels=document.querySelectorAll('section.panel');
-  panels.forEach(p=>p.classList.remove('print-active'));
-  ['panel-rekap','panel-siswa','panel-masuk','panel-keluar','panel-bulanan'].forEach(id=>document.getElementById(id).classList.add('print-active'));
-  document.body.classList.add('printing-kas-all');
-  window.print();
-  setTimeout(()=>{document.body.classList.remove('printing-kas-all');panels.forEach(p=>p.classList.remove('print-active'));},700);
-}
-function cetakBulanan(){
-  const panels=document.querySelectorAll('section.panel');
-  panels.forEach(p=>p.classList.remove('print-active'));
-  document.getElementById('panel-bulanan').classList.add('print-active');
-  document.body.classList.add('printing-bulanan');
-  window.print();
-  setTimeout(()=>{document.body.classList.remove('printing-bulanan');},500);
-}
+// ===================== MESIN CETAK TERPADU =====================
+// Menampilkan panel-panel tertentu (dalam urutan yang diberikan), lalu mencetak,
+// lalu mengembalikan semuanya ke posisi & kondisi semula. breakBefore = id panel
+// yang harus mulai di halaman baru (supaya antar bagian tidak tumpuk/bercampur).
+function cetakPanels(ids, opts){
+  opts = opts || {};
+  const els = ids.map(id=>document.getElementById(id)).filter(Boolean);
+  if(!els.length) return;
+  const parent = els[0].parentNode;
+  const allPanels = [...parent.querySelectorAll(':scope > section.panel')];
+  const originalNext = els.map(el=>el.nextSibling);
 
-// Cetak Ringkasan + Data Siswa dalam satu dokumen
-function cetakRingkasanGabung(){
-  const panels = document.querySelectorAll('section.panel');
-  const rekap = document.getElementById('panel-rekap');
-  const siswa = document.getElementById('panel-siswa');
-  const parent = rekap.parentNode;
-  const marker = document.createComment('urutan-cetak');
-  const originalNext = rekap.nextSibling;
+  allPanels.forEach(p=>{ p.classList.remove('print-active'); p.classList.remove('cetak-break-before'); });
+  els.forEach(el=>el.classList.add('print-active'));
+  els.forEach(el=>parent.appendChild(el)); // urutkan ulang sesuai ids, berurutan tanpa tumpang tindih
+  (opts.breakBefore||[]).forEach(id=>{ const el=document.getElementById(id); if(el) el.classList.add('cetak-break-before'); });
 
-  panels.forEach(p=>p.classList.remove('print-active'));
-  rekap.classList.add('print-active');
-  siswa.classList.add('print-active');
+  if(opts.bodyClass) document.body.classList.add(opts.bodyClass);
 
-  // Cetak Rekap = tabel ringkasan + Data Siswa.
-  // Hanya 4 KPI di bagian atas Rekap Kas yang disembunyikan.
-  document.body.classList.add('printing-gabungan');
-
-  // Ringkasan selalu di atas, Data Siswa di bawah.
-  parent.insertBefore(marker, rekap);
-  parent.insertBefore(rekap, siswa);
+  const originalTitle = document.title;
+  if(opts.fileName) document.title = opts.fileName;
 
   const cleanup = ()=>{
-    document.body.classList.remove('printing-gabungan');
-    panels.forEach(p=>p.classList.remove('print-active'));
-    if(marker.parentNode){
-      marker.parentNode.insertBefore(rekap, marker);
-      marker.parentNode.removeChild(marker);
-    }
-    if(originalNext && originalNext.parentNode===parent){
-      parent.insertBefore(rekap, originalNext);
-    }
+    if(opts.bodyClass) document.body.classList.remove(opts.bodyClass);
+    document.title = originalTitle;
+    allPanels.forEach(p=>{ p.classList.remove('print-active'); p.classList.remove('cetak-break-before'); });
+    els.forEach((el,i)=>{
+      const ref = originalNext[i];
+      if(ref && ref.parentNode===parent) parent.insertBefore(el, ref);
+      else parent.appendChild(el);
+    });
     window.removeEventListener('afterprint', cleanup);
   };
   window.addEventListener('afterprint', cleanup);
-  setTimeout(()=>window.print(), 80);
+  setTimeout(()=>window.print(), 60);
+}
+
+// Cetak Rekap = tabel ringkasan + Data Siswa (1 halaman)
+function cetakRekap(){
+  cetakPanels(['panel-rekap','panel-siswa'], {bodyClass:'printing-rekap-only', fileName:'Rekap Kas Kelas 3B'});
+}
+// Cetak Rincian = Daftar Pemasukan + Daftar Pengeluaran
+function cetakRincian(){
+  cetakPanels(['panel-masuk','panel-keluar'], {bodyClass:'printing-rincian', fileName:'Rincian Kas Kelas 3B'});
+}
+// Cetak Bulanan = Rekap uang kas per bulan
+function cetakBulanan(){
+  cetakPanels(['panel-bulanan'], {bodyClass:'printing-bulanan', fileName:'Kas Bulanan Kelas 3B'});
+}
+// Cetak Semua = Rekap + Bulanan + Rincian, masing-masing bagian dimulai di halaman baru (tidak tumpuk)
+function cetakSemuaKas(){
+  cetakPanels(['panel-rekap','panel-siswa','panel-bulanan','panel-masuk','panel-keluar'], {
+    bodyClass:'printing-kas-all',
+    breakBefore:['panel-bulanan','panel-masuk'],
+    fileName:'Kas Kelas 3B Lengkap'
+  });
 }
 
 // ===================== REKAP KAS (RINGKASAN) =====================
@@ -1338,6 +1368,71 @@ function exportExcel(){
   XLSX.writeFile(wb, 'Uang_Kas_Kelas_3B_Export.xlsx');
 }
 
+// ===================== DROPDOWN CUSTOM (menempel di field, bukan popup) =====================
+function buildCustomSelect(selectEl){
+  if(!selectEl || selectEl.dataset.cselReady) return;
+  selectEl.dataset.cselReady = '1';
+  selectEl.classList.add('csel-native');
+  const wrap = document.createElement('div');
+  wrap.className = 'csel';
+  selectEl.parentNode.insertBefore(wrap, selectEl);
+  wrap.appendChild(selectEl);
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'csel-trigger placeholder';
+  const menu = document.createElement('div');
+  menu.className = 'csel-menu';
+  wrap.appendChild(trigger);
+  wrap.appendChild(menu);
+
+  function renderTrigger(){
+    const opt = selectEl.options[selectEl.selectedIndex];
+    trigger.textContent = opt ? opt.textContent : '';
+    trigger.classList.toggle('placeholder', !selectEl.value);
+    trigger.disabled = selectEl.disabled;
+    trigger.classList.toggle('disabled', selectEl.disabled);
+  }
+  function renderMenu(){
+    menu.innerHTML = [...selectEl.options].map(o=>
+      `<div class="csel-opt${o.value===selectEl.value?' sel':''}${o.disabled?' disabled':''}" data-value="${(o.value||'').replace(/"/g,'&quot;')}">${o.textContent}</div>`
+    ).join('');
+  }
+  function closeMenu(){ menu.classList.remove('show'); trigger.classList.remove('open'); }
+  function openMenu(){
+    if(selectEl.disabled) return;
+    document.querySelectorAll('.csel-menu.show').forEach(m=>{
+      if(m!==menu){ m.classList.remove('show'); const t=m.previousElementSibling; if(t) t.classList.remove('open'); }
+    });
+    renderMenu();
+    menu.classList.add('show');
+    trigger.classList.add('open');
+  }
+  trigger.addEventListener('click', e=>{
+    e.stopPropagation();
+    if(menu.classList.contains('show')) closeMenu(); else openMenu();
+  });
+  menu.addEventListener('click', e=>{
+    const item = e.target.closest('.csel-opt');
+    if(!item || item.classList.contains('disabled')) return;
+    selectEl.value = item.dataset.value;
+    renderTrigger();
+    closeMenu();
+    selectEl.dispatchEvent(new Event('change', {bubbles:true}));
+  });
+  document.addEventListener('click', e=>{ if(!wrap.contains(e.target)) closeMenu(); });
+  selectEl._cselRefresh = renderTrigger;
+  renderTrigger();
+}
+function refreshCustomSelect(id){
+  const el = document.getElementById(id);
+  if(el && el._cselRefresh) el._cselRefresh();
+}
+function initCustomSelects(){
+  ['mNama','mBulanDari','mBulanSampai','tikNama','tikDari','tikSampai'].forEach(id=>{
+    buildCustomSelect(document.getElementById(id));
+  });
+}
+
 // ===================== INIT =====================
 function renderAll(){
   renderSiswa();
@@ -1350,6 +1445,7 @@ function renderAll(){
 document.addEventListener('DOMContentLoaded', ()=>{
   loadState();
   initTabs();
+  initCustomSelects();
   fillMonthSelects();
   fillStudentSelect();
   document.getElementById('mNama').addEventListener('change', handleNamaMasukChange);
@@ -1449,11 +1545,13 @@ function tikShow(which){
 }
 function tikFillStudents(){
   const opts='<option value="">Pilih nama siswa...</option>'+[...tikState.students].sort((a,b)=>a.nama.localeCompare(b.nama,'id')).map(s=>`<option value="${s.nama}">${s.nama}</option>`).join('');document.getElementById('tikNama').innerHTML=opts;
+refreshCustomSelect('tikNama');
 }
 function tikFillMonths(){
   const opts='<option value="">-</option>'+TIK_MONTHS.map(m=>`<option value="${m.key}">${yr2(m.label)}</option>`).join('');
   document.getElementById('tikDari').innerHTML=opts;
   document.getElementById('tikSampai').innerHTML=opts;
+  refreshCustomSelect('tikDari'); refreshCustomSelect('tikSampai');
 }
 function tikMonths(nama){
   const set=new Set();
@@ -1494,7 +1592,7 @@ function tikRenderLists(){
 }
 function tikRenderRekap(){
  const masuk=tikState.pemasukan.reduce((a,b)=>a+Number(b.jumlah||0),0),keluar=tikState.pengeluaran.reduce((a,b)=>a+Number(b.jumlah||0),0),saldo=masuk-keluar;document.getElementById('tikStatMasukTop').textContent=rp(masuk);document.getElementById('tikStatKeluarTop').textContent=rp(keluar);document.getElementById('tikStatSaldoTop').textContent=rp(saldo);document.getElementById('tikStatMasuk').textContent=rp(masuk);document.getElementById('tikStatKeluar').textContent=rp(keluar);document.getElementById('tikStatSaldo').textContent=rp(saldo);
- const data=TIK_MONTHS.map(m=>{const im=tikState.pemasukan.filter(p=>p.bulanPembukuan===m.key).reduce((a,b)=>a+Number(b.jumlah||0),0);const ok=tikState.pengeluaran.filter(p=>p.bulanPembukuan===m.key).reduce((a,b)=>a+Number(b.jumlah||0),0);return {...m,masuk:im,keluar:ok}});let run=0,rows='<tr style="background:var(--paper-2)"><td>Saldo Awal Keseluruhan</td><td class="num">-</td><td class="num">-</td><td class="num">-</td></tr>';data.forEach(d=>{if(!d.masuk&&!d.keluar)return;run+=d.masuk-d.keluar;rows+=`<tr><td>${yr2(d.label)}</td><td class="num">${rpCell(d.masuk)}</td><td class="num" style="color:var(--coral)">${rpCell(d.keluar)}</td><td class="num" style="font-weight:700">${rpCell(run)}</td></tr>`});rows+=`<tr style="background:var(--teal-tint);font-weight:700"><td>TIK TERSEDIA</td><td class="num">${rpCell(masuk)}</td><td class="num">${rpCell(keluar)}</td><td class="num">${rpCell(saldo)}</td></tr>`;document.getElementById('tikRekapBody').innerHTML=rows;
+ const data=TIK_MONTHS.map(m=>{const im=tikState.pemasukan.filter(p=>p.bulanPembukuan===m.key).reduce((a,b)=>a+Number(b.jumlah||0),0);const ok=tikState.pengeluaran.filter(p=>p.bulanPembukuan===m.key).reduce((a,b)=>a+Number(b.jumlah||0),0);return {...m,masuk:im,keluar:ok}});let run=0,rows='<tr style="background:var(--paper-2)"><td class="center">Saldo Awal Keseluruhan</td><td class="num">-</td><td class="num">-</td><td class="num">-</td></tr>';data.forEach(d=>{if(!d.masuk&&!d.keluar)return;run+=d.masuk-d.keluar;rows+=`<tr><td class="center">${yr2(d.label)}</td><td class="num">${rpCell(d.masuk)}</td><td class="num" style="color:var(--coral)">${rpCell(d.keluar)}</td><td class="num" style="font-weight:700">${rpCell(run)}</td></tr>`});rows+=`<tr style="background:var(--teal-tint);font-weight:700"><td class="center">TIK TERSEDIA</td><td class="num">${rpCell(masuk)}</td><td class="num">${rpCell(keluar)}</td><td class="num">${rpCell(saldo)}</td></tr>`;document.getElementById('tikRekapBody').innerHTML=rows;
 }
 function renderTik(){tikFillStudents();tikFillMonths();tikRenderSiswa();tikRenderLists();tikRenderRekap();document.getElementById('tikTanggal').value=todayText();document.getElementById('tikKeluarTanggal').value=todayText();document.getElementById('tikJumlah').addEventListener('input',formatRibuanInput);document.getElementById('tikKeluarJumlah').addEventListener('input',formatRibuanInput)}
 function tikSimpanMasuk(){const nama=document.getElementById('tikNama').value,dari=document.getElementById('tikDari').value,sampai=document.getElementById('tikSampai').value||dari,jumlah=parseRibuan(document.getElementById('tikJumlah').value),tgl=new Date().toISOString().slice(0,10);if(!nama||!dari||!jumlah){alert('Mohon lengkapi Nama, Bulan TIK, dan Jumlah.');return}tikState.pemasukan.push({id:tikState.nextMasukId++,nama,tanggalBayar:tgl,bulanPembukuan:tgl.slice(0,7),bulanDari:dari,bulanSampai:sampai,jumlahBulan:Math.abs(monthIndex(sampai)-monthIndex(dari))+1,jumlah,keterangan:document.getElementById('tikKet').value.trim()||'Iuran TIK'});saveTik();renderTik();tikShow('rekap')}
@@ -1511,8 +1609,90 @@ function tikHapusSiswa(index){
 function tikTambahSiswa(){const nama=prompt('Masukkan nama siswa:');if(nama===null)return;const clean=nama.trim().replace(/\s+/g,' ');if(!clean)return;if(tikState.students.some(s=>s.nama.toLowerCase()===clean.toLowerCase())){alert('Nama sudah ada.');return}tikState.students.push({no:tikState.students.length+1,nama:clean});saveTik();renderTik()}
 function togglePrintMenu(id){document.querySelectorAll('.print-menu').forEach(x=>{if(x.id!==id)x.classList.remove('show')});document.getElementById(id).classList.toggle('show')}
 document.addEventListener('click',e=>{if(!e.target.closest('.print-menu-wrap'))document.querySelectorAll('.print-menu').forEach(x=>x.classList.remove('show'))});
-function printPanels(ids,cls){document.querySelectorAll('#tikApp .panel, section.panel').forEach(p=>p.classList.remove('print-active'));ids.forEach(id=>document.getElementById(id).classList.add('print-active'));document.body.classList.add(cls);window.print();setTimeout(()=>{document.body.classList.remove(cls);document.querySelectorAll('#tikApp .panel').forEach(p=>p.classList.remove('print-active'))},700)}
-function tikPrint(kind){document.getElementById('tikPrintMenu').classList.remove('show');if(kind==='rekap')printPanels(['tik-rekap'],'printing-tik-rekap');else if(kind==='rincian')printPanels(['tik-siswa','tik-masuk','tik-keluar'],'printing-tik-rincian');else printPanels(['tik-rekap','tik-siswa','tik-masuk','tik-keluar'],'printing-tik-all')}
+
+// ===================== BAGIKAN (SHARE) =====================
+function loadShareLibs(){
+  if(window.__shareLibsPromise) return window.__shareLibsPromise;
+  const loadScript=src=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('Gagal memuat '+src));document.head.appendChild(s)});
+  window.__shareLibsPromise=(async()=>{
+    if(typeof html2canvas==='undefined') await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+    if(typeof window.jspdf==='undefined') await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+  })();
+  return window.__shareLibsPromise;
+}
+function downloadBlob(blob,fileName){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=fileName;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),3000);
+}
+function buildShareText(mode){
+  if(mode==='kas'){
+    const masuk=state.pemasukan.reduce((a,b)=>a+Number(b.jumlah||0),0);
+    const keluar=state.pengeluaran.reduce((a,b)=>a+Number(b.jumlah||0),0);
+    return `*Rekap Kas Kelas 3B*\nAgustus 2026 – Juni 2027\n\nTotal Masuk: ${rp(masuk)}\nTotal Keluar: ${rp(keluar)}\nKas Tersedia: ${rp(masuk-keluar)}`;
+  }
+  const masuk=tikState.pemasukan.reduce((a,b)=>a+Number(b.jumlah||0),0);
+  const keluar=tikState.pengeluaran.reduce((a,b)=>a+Number(b.jumlah||0),0);
+  return `*Rekap TIK Kelas 3B*\nAgustus 2026 – Mei 2027\n\nTotal Masuk: ${rp(masuk)}\nTotal Keluar: ${rp(keluar)}\nTIK Tersedia: ${rp(masuk-keluar)}`;
+}
+async function shareRekap(mode,type){
+  togglePrintMenu(mode==='kas'?'kasShareMenu':'tikShareMenu');
+  if(type==='teks'){
+    const text=buildShareText(mode);
+    try{
+      if(navigator.share){ await navigator.share({text}); return; }
+      if(navigator.clipboard){ await navigator.clipboard.writeText(text); alert('Teks rekap sudah disalin. Silakan tempel di WhatsApp atau aplikasi lain.'); return; }
+      prompt('Salin teks berikut:',text);
+    }catch(err){ if(err.name!=='AbortError') console.error(err); }
+    return;
+  }
+  const fileBase=mode==='kas'?'Rekap_Kas_Kelas_3B':'Rekap_TIK_Kelas_3B';
+  const targetId=mode==='kas'?'panel-rekap':'tik-rekap';
+  try{
+    await loadShareLibs();
+    const el=document.getElementById(targetId);
+    document.body.classList.add('capturing-share');
+    const canvas=await html2canvas(el,{backgroundColor:'#ffffff',scale:2});
+    document.body.classList.remove('capturing-share');
+    if(type==='gambar'){
+      canvas.toBlob(async blob=>{
+        const file=new File([blob],fileBase+'.png',{type:'image/png'});
+        if(navigator.canShare && navigator.canShare({files:[file]})){
+          try{ await navigator.share({files:[file],title:'Rekap Kelas 3B'}); return; }catch(err){ if(err.name==='AbortError') return; }
+        }
+        downloadBlob(blob,fileBase+'.png');
+      },'image/png');
+    } else if(type==='pdf'){
+      const {jsPDF}=window.jspdf;
+      const pdf=new jsPDF({unit:'px',format:[canvas.width,canvas.height]});
+      pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,canvas.width,canvas.height);
+      const blob=pdf.output('blob');
+      const file=new File([blob],fileBase+'.pdf',{type:'application/pdf'});
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        try{ await navigator.share({files:[file],title:'Rekap Kelas 3B'}); return; }catch(err){ if(err.name==='AbortError') return; }
+      }
+      downloadBlob(blob,fileBase+'.pdf');
+    }
+  }catch(err){
+    document.body.classList.remove('capturing-share');
+    console.error(err);
+    alert('Gagal membuat file untuk dibagikan. Pastikan koneksi internet aktif, atau gunakan tombol Cetak sebagai alternatif.');
+  }
+}
+// Cetak Rekap TIK = tabel ringkasan + Data Siswa TIK
+// Cetak Rincian TIK = Daftar Pemasukan + Daftar Pengeluaran TIK
+// Cetak Semua TIK = Rekap + Rincian, tanpa tumpuk (rincian mulai di halaman baru)
+function tikPrint(kind){
+  document.getElementById('tikPrintMenu').classList.remove('show');
+  if(kind==='rekap'){
+    cetakPanels(['tik-rekap','tik-siswa'], {bodyClass:'printing-tik-rekap', fileName:'Rekap TIK Kelas 3B'});
+  } else if(kind==='rincian'){
+    cetakPanels(['tik-masuk','tik-keluar'], {bodyClass:'printing-tik-rincian', fileName:'Rincian TIK Kelas 3B'});
+  } else {
+    cetakPanels(['tik-rekap','tik-siswa','tik-masuk','tik-keluar'], {bodyClass:'printing-tik-all', breakBefore:['tik-masuk'], fileName:'TIK Kelas 3B Lengkap'});
+  }
+}
 function tikExportExcel(){if(typeof XLSX==='undefined'){alert('Library Excel belum tersedia.');return}const wb=XLSX.utils.book_new();const siswa=[['DATA SISWA TIK'],['NO','NAMA SISWA','TOTAL TIK',...TIK_MONTHS.map(m=>m.label)]];tikState.students.forEach(s=>{const p=tikMonths(s.nama);let t=0;const vals=TIK_MONTHS.map(m=>{const v=p.has(m.key)?TIK_IURAN:0;t+=v;return v});siswa.push([s.no,s.nama,t,...vals])});XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(siswa),'Data Siswa TIK');XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['INPUT PEMASUKAN TIK'],['NO','NAMA','TANGGAL','BULAN DARI','BULAN SAMPAI','JUMLAH','KETERANGAN'],...tikState.pemasukan.map((p,i)=>[i+1,p.nama,p.tanggalBayar,monthLabel(p.bulanDari),monthLabel(p.bulanSampai),p.jumlah,p.keterangan])]),'Input Pemasukan TIK');XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['INPUT PENGELUARAN TIK'],['NO','TANGGAL','JUMLAH','KETERANGAN'],...tikState.pengeluaran.map((p,i)=>[i+1,p.tanggal,p.jumlah,p.keterangan])]),'Input Pengeluaran TIK');XLSX.writeFile(wb,'Uang_TIK_Kelas_3B_Export.xlsx')}
 // Override legacy navigation to direct panel switching; Kas storage remains the original key.
 /* legacy showPanel override removed */
