@@ -311,7 +311,13 @@ button[onclick*="pemasukan"] span, button[onclick*="pengeluaran"] span, button[o
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></head>
 <body>
+<div id="cloudLoadingOverlay" style="position:fixed;inset:0;background:#F6F3EC;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
+  <div style="width:38px;height:38px;border-radius:50%;border:3px solid #DAD3C0;border-top-color:#1F5D50;animation:cloudspin 0.8s linear infinite;"></div>
+  <div style="font-family:'Inter',-apple-system,sans-serif;color:#615C50;font-size:13.5px;font-weight:600;">Memuat data terbaru...</div>
+</div>
+<style>@keyframes cloudspin{to{transform:rotate(360deg)}}</style>
 <div class="app">
+<div id="syncStatus" style="position:fixed;bottom:14px;right:14px;background:#fff;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;box-shadow:0 2px 10px rgba(31,93,80,0.18);z-index:500;display:none;align-items:center;gap:6px;"></div>
 
   <!-- MODE PEMBUKUAN -->
   <div class="mode-switch no-print" id="modeSwitch">
@@ -626,43 +632,73 @@ async function cloudPull(sheet){
     return null;
   }
 }
-function cloudPush(sheet, data){
-  try{
-    fetch(CLOUD_URL, { method:'POST', body: JSON.stringify({sheet, data}) }).catch(e=>console.warn('Gagal simpan ke cloud ('+sheet+'):', e));
-  }catch(e){ console.warn('Gagal simpan ke cloud ('+sheet+'):', e); }
+let syncStatusTimeout=null;
+function setSyncStatus(status){
+  const el = document.getElementById('syncStatus');
+  if(!el) return;
+  clearTimeout(syncStatusTimeout);
+  el.style.display = 'flex';
+  if(status==='saving'){
+    el.innerHTML = '⏳ Menyimpan...';
+    el.style.color = '#8a6416';
+    el.style.background = '#FBF0DA';
+  } else if(status==='success'){
+    el.innerHTML = '☁️ Tersimpan ke cloud';
+    el.style.color = '#1F5D50';
+    el.style.background = '#E4EEE9';
+    syncStatusTimeout = setTimeout(()=>{ el.style.display='none'; }, 2500);
+  } else if(status==='error'){
+    el.innerHTML = '⚠️ Gagal sinkron ke cloud';
+    el.style.color = '#C1544A';
+    el.style.background = '#F7E7E4';
+    syncStatusTimeout = setTimeout(()=>{ el.style.display='none'; }, 4000);
+  }
 }
 function cloudPush(sheet, data){
-  try{
-    fetch(CLOUD_URL, { method:'POST', body: JSON.stringify({sheet, data}) }).catch(e=>console.warn('Gagal simpan ke cloud ('+sheet+'):', e));
-  }catch(e){ console.warn('Gagal simpan ke cloud ('+sheet+'):', e); }
+  setSyncStatus('saving');
+  fetch(CLOUD_URL, { method:'POST', body: JSON.stringify({sheet, data}) })
+    .then(res=>res.json())
+    .then(json=>{
+      if(json && json.success) setSyncStatus('success');
+      else setSyncStatus('error');
+    })
+    .catch(e=>{ console.warn('Gagal simpan ke cloud ('+sheet+'):', e); setSyncStatus('error'); });
+}
+function hideCloudOverlay(){
+  const el = document.getElementById('cloudLoadingOverlay');
+  if(el) el.style.display = 'none';
 }
 
 // ===================== STATE =====================
 const STORAGE_KEY = 'kas3b_2026_2027_v1';
 let state = null;
 
-function loadState(){
+async function loadState(){
   const seed = JSON.parse(document.getElementById('seed-data').textContent);
-  let candidate = null;
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if(saved){ try{ candidate = JSON.parse(saved); }catch(e){ candidate = null; } }
+  let candidate = await cloudPull('Kas');
+  if(!candidate){
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(saved){ try{ candidate = JSON.parse(saved); }catch(e){ candidate = null; } }
+  }
   // Jangan pernah menerima state kosong yang terbentuk karena versi revisi.
   const valid = candidate && Array.isArray(candidate.students) && candidate.students.length > 0
     && Array.isArray(candidate.pemasukan) && Array.isArray(candidate.pengeluaran)
     && (candidate.pemasukan.length + candidate.pengeluaran.length > 0);
   if(valid){
     state = candidate;
-  } else {
-    state = {
-      students: seed.students,
-      pemasukan: seed.pemasukan,
-      pengeluaran: seed.pengeluaran,
-      nextMasukId: seed.pemasukan.length ? Math.max(...seed.pemasukan.map(p=>p.id))+1 : 1,
-      nextKeluarId: seed.pengeluaran.length ? Math.max(...seed.pengeluaran.map(p=>p.id))+1 : 1,
-    };
+    backfillKeterangan();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    return;
   }
+  state = {
+    students: seed.students,
+    pemasukan: seed.pemasukan,
+    pengeluaran: seed.pengeluaran,
+    nextMasukId: seed.pemasukan.length ? Math.max(...seed.pemasukan.map(p=>p.id))+1 : 1,
+    nextKeluarId: seed.pengeluaran.length ? Math.max(...seed.pengeluaran.map(p=>p.id))+1 : 1,
+  };
   backfillKeterangan();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  saveState();
 }
 function backfillKeterangan(){
   state.pemasukan.forEach(p=>{ if(!p.keterangan) p.keterangan = 'Kas Bulanan'; });
@@ -670,24 +706,6 @@ function backfillKeterangan(){
 function saveState(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   cloudPush('Kas', state);
-}
-// Sinkron diam-diam dari cloud setelah tampilan awal terlihat.
-async function refreshStateFromCloud(){
-  const cloud = await cloudPull('Kas');
-  const validCloud = cloud && Array.isArray(cloud.students) && cloud.students.length > 0
-    && Array.isArray(cloud.pemasukan) && Array.isArray(cloud.pengeluaran)
-    && (cloud.pemasukan.length + cloud.pengeluaran.length > 0);
-  if(validCloud){
-    if(JSON.stringify(cloud) !== JSON.stringify(state)){
-      state = cloud;
-      backfillKeterangan();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      renderAll();
-    }
-  } else {
-    // Cloud masih kosong (pertama kali dipakai) -> kirim data lokal saat ini sebagai data awal.
-    cloudPush('Kas', state);
-  }
 }
 
 // ===================== HELPERS =====================
@@ -1483,8 +1501,8 @@ function renderAll(){
   renderRekapKas();
 }
 
-document.addEventListener('DOMContentLoaded', ()=>{
-  loadState();
+document.addEventListener('DOMContentLoaded', async ()=>{
+  await loadState();
   initTabs();
   initCustomSelects();
   fillMonthSelects();
@@ -1500,7 +1518,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('kTanggal').value = formatTanggalPendek(new Date());
   document.getElementById('kTanggal').readOnly = true;
   renderAll();
-  refreshStateFromCloud();
+  hideCloudOverlay();
 });
 
 </script>
@@ -1534,7 +1552,7 @@ function tikMonthIndex(k){ return TIK_MONTHS.findIndex(x=>x.key===k); }
 
 let tikState=null;
 function todayText(){return formatTanggalPendek(new Date());}
-function switchBook(mode){
+async function switchBook(mode){
   const kasPanels=document.querySelectorAll('#panel-siswa,#panel-masuk,#panel-keluar,#panel-bulanan,#panel-rekap');
   const tik=document.getElementById('tikApp');
   const kasNav=document.getElementById('kasLegacyNav');
@@ -1542,8 +1560,11 @@ function switchBook(mode){
   const kasMode=document.getElementById('modeKasBtn'), tikMode=document.getElementById('modeTikBtn');
   if(mode==='tik'){
     kasPanels.forEach(p=>p.style.display='none'); if(kasHeader)kasHeader.style.display='none'; tik.style.display='block'; kasMode.classList.remove('active'); tikMode.classList.add('active');
-    loadTikLocal(); renderTik(); tikShow('rekap');
-    refreshTikFromCloud();
+    const overlay=document.getElementById('cloudLoadingOverlay');
+    if(overlay && !tikLoaded) overlay.style.display='flex';
+    await loadTik();
+    if(overlay) overlay.style.display='none';
+    renderTik(); tikShow('rekap');
   }else{
     tik.style.display='none'; if(kasHeader)kasHeader.style.display='flex'; kasPanels.forEach(p=>p.style.display=''); kasMode.classList.add('active'); tikMode.classList.remove('active'); showPanel('panel-rekap');
   }
@@ -1557,10 +1578,15 @@ function tikSeed(){
     nextKeluarId:2
   };
 }
-function loadTikLocal(){
-  const saved=localStorage.getItem(TIK_STORAGE_KEY);
-  let x=null;
-  if(saved){ try{ x=JSON.parse(saved); }catch(e){ x=null; } }
+let tikLoaded=false;
+async function loadTik(){
+  if(tikLoaded) return;
+  tikLoaded=true;
+  let x = await cloudPull('TIK');
+  if(!x){
+    const saved=localStorage.getItem(TIK_STORAGE_KEY);
+    if(saved){ try{ x=JSON.parse(saved); }catch(e){ x=null; } }
+  }
   if(x&&Array.isArray(x.students)&&x.students.length){
     /* Jika data TIK kosong (pemasukan dan/atau pengeluaran), pulihkan dari sumber Excel yang tertanam. */
     const needMasuk=!Array.isArray(x.pemasukan) || x.pemasukan.length===0;
@@ -1570,32 +1596,19 @@ function loadTikLocal(){
       if(needMasuk){ x.pemasukan=seeded.pemasukan; x.nextMasukId=seeded.nextMasukId; }
       if(needKeluar){ x.pengeluaran=seeded.pengeluaran; x.nextKeluarId=seeded.nextKeluarId; }
       else{ x.nextKeluarId=Math.max(1,Number(x.nextKeluarId)||1); }
+      tikState=x;
+      saveTik();
+      return;
     }
     tikState=x;
-  } else {
-    tikState=tikSeed();
+    localStorage.setItem(TIK_STORAGE_KEY, JSON.stringify(tikState));
+    return;
   }
-  localStorage.setItem(TIK_STORAGE_KEY, JSON.stringify(tikState));
+  tikState=tikSeed();saveTik();
 }
 function saveTik(){
   localStorage.setItem(TIK_STORAGE_KEY,JSON.stringify(tikState));
   cloudPush('TIK', tikState);
-}
-// Sinkron diam-diam dari cloud setelah tampilan TIK terlihat.
-async function refreshTikFromCloud(){
-  const cloud = await cloudPull('TIK');
-  const validCloud = cloud && Array.isArray(cloud.students) && cloud.students.length > 0
-    && Array.isArray(cloud.pemasukan) && Array.isArray(cloud.pengeluaran)
-    && (cloud.pemasukan.length + cloud.pengeluaran.length > 0);
-  if(validCloud){
-    if(JSON.stringify(cloud) !== JSON.stringify(tikState)){
-      tikState = cloud;
-      localStorage.setItem(TIK_STORAGE_KEY, JSON.stringify(tikState));
-      renderTik();
-    }
-  } else {
-    cloudPush('TIK', tikState);
-  }
 }
 function tikShow(which){
   ['rekap','siswa','masuk','keluar'].forEach(k=>document.getElementById('tik-'+k).classList.remove('active','print-active'));
