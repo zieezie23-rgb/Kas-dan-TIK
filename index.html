@@ -75,7 +75,7 @@ tbody tr:hover{background:var(--paper)}
 .num{text-align:right;font-variant-numeric:tabular-nums}
 .center{text-align:center}
 .paid{color:var(--teal);font-weight:700}
-#tblSiswa td.paid-cell{background:#e8f4ee}
+.siswa-table td.paid-cell{background:#e8f4ee}
 .unpaid{color:#c8c1af}
 .pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
 .pill-total{background:var(--amber-tint);color:#8a6416}
@@ -89,6 +89,8 @@ tbody tr:hover{background:var(--paper)}
 tr.row-lunas, tr.row-lunas:hover{background:transparent}
 #tblSiswa thead th, #tblSiswa tbody tr.total-row td{background:var(--teal-dark);color:#fff}
 #tblSiswa tbody tr.total-row .rp-label, #tblSiswa tbody tr.total-row .rp-value{color:#fff}
+.siswa-table thead th, .siswa-table tbody tr.total-row td{background:var(--teal-dark);color:#fff}
+.siswa-table tbody tr.total-row .rp-label, .siswa-table tbody tr.total-row .rp-value{color:#fff}
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
 .kpi{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-left:4px solid var(--teal)}
 .kpi.amber{border-left-color:var(--amber)}
@@ -127,6 +129,8 @@ tr.row-lunas, tr.row-lunas:hover{background:transparent}
 .icon-btn.danger:hover{background:var(--coral-tint)}
 #tblSiswa .no-print .icon-btn{font-size:14px;padding:4px 6px}
 #tblSiswa td, #tblSiswa th{white-space:nowrap}
+.siswa-table .no-print .icon-btn{font-size:14px;padding:4px 6px}
+.siswa-table td, .siswa-table th{white-space:nowrap}
 th.sortable-th{cursor:pointer;user-select:none;white-space:nowrap}
 th.sortable-th:hover{background:#d3e6de}
 th.sortable-th .sort-arrow{font-size:9px;margin-left:3px;opacity:.85}
@@ -317,7 +321,7 @@ button[onclick*="pemasukan"] span, button[onclick*="pengeluaran"] span, button[o
 </div>
 <style>@keyframes cloudspin{to{transform:rotate(360deg)}}</style>
 <div class="app">
-<div id="syncStatus" style="position:fixed;bottom:14px;right:14px;background:#fff;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;box-shadow:0 2px 10px rgba(31,93,80,0.18);z-index:500;display:none;align-items:center;gap:6px;"></div>
+<div id="syncStatus" style="position:absolute;top:14px;right:14px;background:#fff;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;box-shadow:0 2px 10px rgba(31,93,80,0.18);z-index:5;display:none;align-items:center;gap:6px;"></div>
 
   <!-- MODE PEMBUKUAN -->
   <div class="mode-switch no-print" id="modeSwitch">
@@ -361,7 +365,7 @@ button[onclick*="pemasukan"] span, button[onclick*="pengeluaran"] span, button[o
     <div class="card">
       <h2>Data Siswa &amp; Status Kas per Bulan</h2>
       <div class="tbl-wrap">
-        <table id="tblSiswa">
+        <table id="tblSiswa" class="siswa-table">
           <thead><tr id="theadSiswa"></tr></thead>
           <tbody id="tbodySiswa"></tbody>
         </table>
@@ -546,13 +550,13 @@ button[onclick*="pemasukan"] span, button[onclick*="pengeluaran"] span, button[o
       </div>
     </section>
     <section class="panel" id="tik-siswa">
-      <div class="card"><h2>Data Siswa &amp; Status TIK per Bulan</h2><div class="tbl-wrap"><table><thead><tr id="tikSiswaHead"></tr></thead><tbody id="tikSiswaBody"></tbody></table></div><div class="form-action-row no-print"><button class="btn btn-ghost" onclick="tikShow('rekap')">🏠 Kembali ke Rekap</button><button class="btn btn-primary" onclick="tikTambahSiswa()">＋ Tambah Siswa</button></div></div>
+      <div class="card"><h2>Data Siswa &amp; Status TIK per Bulan</h2><div class="tbl-wrap"><table class="siswa-table" id="tblSiswaTik"><thead><tr id="tikSiswaHead"></tr></thead><tbody id="tikSiswaBody"></tbody></table></div><div class="form-action-row no-print"><div class="no-print back-to-rekap"><button class="btn btn-ghost" onclick="tikShow('rekap')">🏠 Kembali ke Rekap</button></div><div class="btn-row btn-row-right"><button class="btn btn-primary" onclick="tikTambahSiswa()">＋ Tambah Siswa</button></div></div></div>
     </section>
     <section class="panel" id="tik-masuk">
-      <div class="card no-print"><h2>Input Pemasukan TIK</h2><div class="form-grid"><div class="field"><label>Nama Siswa</label><select id="tikNama"></select></div><div class="field"><label>Tanggal Bayar</label><input id="tikTanggal" type="text" readonly></div><div class="field"><label>Bulan TIK Dari</label><select id="tikDari"></select></div><div class="field"><label>Bulan TIK Sampai</label><select id="tikSampai"></select></div><div class="field"><label>Jumlah (Rp)</label><input id="tikJumlah" type="text" inputmode="numeric"></div><div class="field"><label>Keterangan</label><input id="tikKet" type="text" value="Iuran TIK"></div></div><div class="form-action-row"><button class="btn btn-ghost" onclick="tikShow('rekap')">🏠 Kembali</button><button class="btn btn-primary" onclick="tikSimpanMasuk()">+ Simpan</button></div></div><div class="card"><h2>Daftar Pemasukan TIK</h2><div class="month-tbl-wrap"><table><thead><tr><th>No</th><th>Nama</th><th>Tanggal</th><th>Bulan</th><th class="num">Jumlah</th><th>Keterangan</th></tr></thead><tbody id="tikMasukBody"></tbody></table></div></div>
+      <div class="card no-print"><h2>Input Pemasukan TIK</h2><div class="form-grid"><div class="field"><label>Nama Siswa</label><select id="tikNama"></select></div><div class="field"><label>Tanggal Bayar</label><input id="tikTanggal" type="text" readonly></div><div class="field"><label>Bulan TIK Dari</label><select id="tikDari"></select></div><div class="field"><label>Bulan TIK Sampai</label><select id="tikSampai"></select></div><div class="field"><label>Jumlah (Rp)</label><input id="tikJumlah" type="text" inputmode="numeric"></div><div class="field"><label>Keterangan</label><input id="tikKet" type="text" value="Iuran TIK"></div></div><div class="form-action-row no-print"><div class="no-print back-to-rekap"><button class="btn btn-ghost" onclick="tikShow('rekap')">🏠 Kembali ke Rekap</button></div><div class="btn-row btn-row-right"><button class="btn btn-primary" onclick="tikSimpanMasuk()">+ Simpan</button></div></div></div><div class="card"><h2>Daftar Pemasukan TIK</h2><div class="month-tbl-wrap"><table><thead><tr><th>No</th><th>Nama</th><th>Tanggal</th><th>Bulan</th><th class="num">Jumlah</th><th>Keterangan</th></tr></thead><tbody id="tikMasukBody"></tbody></table></div></div>
     </section>
     <section class="panel" id="tik-keluar">
-      <div class="card no-print"><h2>Input Pengeluaran TIK</h2><div class="form-grid"><div class="field"><label>Tanggal</label><input id="tikKeluarTanggal" type="text" readonly></div><div class="field"><label>Jumlah (Rp)</label><input id="tikKeluarJumlah" type="text" inputmode="numeric"></div><div class="field" style="grid-column:span 2"><label>Keterangan</label><input id="tikKeluarKet" type="text" value="Setoran"></div></div><div class="form-action-row"><button class="btn btn-ghost" onclick="tikShow('rekap')">🏠 Kembali</button><button class="btn btn-primary" onclick="tikSimpanKeluar()">+ Simpan</button></div></div><div class="card"><h2>Daftar Pengeluaran TIK</h2><div class="month-tbl-wrap"><table><thead><tr><th>No</th><th>Tanggal</th><th class="num">Jumlah</th><th>Keterangan</th></tr></thead><tbody id="tikKeluarBody"></tbody></table></div></div>
+      <div class="card no-print"><h2 id="tikKeluarFormTitle">Input Pengeluaran TIK</h2><div class="form-grid"><div class="field"><label>Tanggal</label><input id="tikKeluarTanggal" type="text" readonly></div><div class="field"><label>Jumlah (Rp)</label><input id="tikKeluarJumlah" type="text" inputmode="numeric"></div><div class="field" style="grid-column:span 2"><label>Keterangan</label><input id="tikKeluarKet" type="text" value="Setoran"></div></div><div class="form-action-row no-print"><div class="no-print back-to-rekap"><button class="btn btn-ghost" onclick="tikShow('rekap')">🏠 Kembali ke Rekap</button></div><div class="btn-row btn-row-right"><button class="btn btn-primary" onclick="tikSimpanKeluar()" id="tikBtnSubmitKeluar">+ Simpan</button><button class="btn btn-ghost" onclick="tikResetFormKeluar()" id="tikBtnCancelKeluar" style="display:none;">Batal Edit</button></div></div></div><div class="card"><h2>Daftar Pengeluaran TIK</h2><div class="month-tbl-wrap"><table><thead><tr><th>No</th><th>Tanggal</th><th class="num">Jumlah</th><th>Keterangan</th><th class="center no-print" style="width:60px;">Aksi</th></tr></thead><tbody id="tikKeluarBody"></tbody></table></div></div>
     </section>
   </div>
 
@@ -632,8 +636,18 @@ async function cloudPull(sheet){
     return null;
   }
 }
+function placeSyncBadge(){
+  const el = document.getElementById('syncStatus');
+  if(!el) return;
+  const tikApp = document.getElementById('tikApp');
+  const targetHeader = (tikApp && tikApp.style.display === 'block')
+    ? document.querySelector('header.top.tik-top')
+    : document.querySelector('header.top:not(.tik-top)');
+  if(targetHeader && el.parentElement !== targetHeader) targetHeader.appendChild(el);
+}
 let syncStatusTimeout=null;
 function setSyncStatus(status){
+  placeSyncBadge();
   const el = document.getElementById('syncStatus');
   if(!el) return;
   clearTimeout(syncStatusTimeout);
@@ -1518,6 +1532,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   document.getElementById('kTanggal').value = formatTanggalPendek(new Date());
   document.getElementById('kTanggal').readOnly = true;
   renderAll();
+  placeSyncBadge();
   hideCloudOverlay();
 });
 
@@ -1564,9 +1579,9 @@ async function switchBook(mode){
     if(overlay && !tikLoaded) overlay.style.display='flex';
     await loadTik();
     if(overlay) overlay.style.display='none';
-    renderTik(); tikShow('rekap');
+    renderTik(); tikShow('rekap'); placeSyncBadge();
   }else{
-    tik.style.display='none'; if(kasHeader)kasHeader.style.display='flex'; kasPanels.forEach(p=>p.style.display=''); kasMode.classList.add('active'); tikMode.classList.remove('active'); showPanel('panel-rekap');
+    tik.style.display='none'; if(kasHeader)kasHeader.style.display='flex'; kasPanels.forEach(p=>p.style.display=''); kasMode.classList.add('active'); tikMode.classList.remove('active'); showPanel('panel-rekap'); placeSyncBadge();
   }
 }
 function tikSeed(){
@@ -1659,7 +1674,7 @@ function tikRenderSiswa(){
 }
 function tikRenderLists(){
  document.getElementById('tikMasukBody').innerHTML=tikState.pemasukan.map((p,i)=>`<tr><td>${i+1}</td><td>${p.nama}</td><td>${fmtDate(p.tanggalBayar)}</td><td>${bulanKasLabel(p.bulanDari,p.bulanSampai)}</td><td class="num">${rpCell(p.jumlah)}</td><td>${p.keterangan||'Iuran TIK'}</td></tr>`).join('')||'<tr><td colspan="6">Belum ada pemasukan.</td></tr>';
- document.getElementById('tikKeluarBody').innerHTML=tikState.pengeluaran.map((p,i)=>`<tr><td>${i+1}</td><td>${fmtDate(p.tanggal)}</td><td class="num">${rpCell(p.jumlah)}</td><td>${p.keterangan||'Setoran'}</td></tr>`).join('')||'<tr><td colspan="4">Belum ada pengeluaran.</td></tr>';
+ document.getElementById('tikKeluarBody').innerHTML=tikState.pengeluaran.map((p,i)=>`<tr><td>${i+1}</td><td>${fmtDate(p.tanggal)}</td><td class="num">${rpCell(p.jumlah)}</td><td>${p.keterangan||'Setoran'}</td><td class="center no-print"><button class="icon-btn" onclick="tikEditKeluar(${p.id})" title="Edit">✏️</button><button class="icon-btn danger" onclick="tikHapusKeluar(${p.id})" title="Hapus">🗑️</button></td></tr>`).join('')||'<tr><td colspan="5">Belum ada pengeluaran.</td></tr>';
 }
 function tikRenderRekap(){
  const masuk=tikState.pemasukan.reduce((a,b)=>a+Number(b.jumlah||0),0),keluar=tikState.pengeluaran.reduce((a,b)=>a+Number(b.jumlah||0),0),saldo=masuk-keluar;document.getElementById('tikStatMasukTop').textContent=rp(masuk);document.getElementById('tikStatKeluarTop').textContent=rp(keluar);document.getElementById('tikStatSaldoTop').textContent=rp(saldo);document.getElementById('tikStatMasuk').textContent=rp(masuk);document.getElementById('tikStatKeluar').textContent=rp(keluar);document.getElementById('tikStatSaldo').textContent=rp(saldo);
@@ -1667,7 +1682,48 @@ function tikRenderRekap(){
 }
 function renderTik(){tikFillStudents();tikFillMonths();tikRenderSiswa();tikRenderLists();tikRenderRekap();document.getElementById('tikTanggal').value=todayText();document.getElementById('tikKeluarTanggal').value=todayText();document.getElementById('tikJumlah').addEventListener('input',formatRibuanInput);document.getElementById('tikKeluarJumlah').addEventListener('input',formatRibuanInput)}
 function tikSimpanMasuk(){const nama=document.getElementById('tikNama').value,dari=document.getElementById('tikDari').value,sampai=document.getElementById('tikSampai').value||dari,jumlah=parseRibuan(document.getElementById('tikJumlah').value),tgl=new Date().toISOString().slice(0,10);if(!nama||!dari||!jumlah){alert('Mohon lengkapi Nama, Bulan TIK, dan Jumlah.');return}tikState.pemasukan.push({id:tikState.nextMasukId++,nama,tanggalBayar:tgl,bulanPembukuan:tgl.slice(0,7),bulanDari:dari,bulanSampai:sampai,jumlahBulan:Math.abs(monthIndex(sampai)-monthIndex(dari))+1,jumlah,keterangan:document.getElementById('tikKet').value.trim()||'Iuran TIK'});saveTik();renderTik();tikShow('rekap')}
-function tikSimpanKeluar(){const jumlah=parseRibuan(document.getElementById('tikKeluarJumlah').value),tgl=new Date().toISOString().slice(0,10);if(!jumlah){alert('Mohon isi jumlah.');return}tikState.pengeluaran.push({id:tikState.nextKeluarId++,tanggal:tgl,bulanPembukuan:tgl.slice(0,7),jumlah,keterangan:document.getElementById('tikKeluarKet').value.trim()||'Setoran'});saveTik();renderTik();tikShow('rekap')}
+let tikEditKeluarId=null;
+function tikSimpanKeluar(){
+  const jumlah=parseRibuan(document.getElementById('tikKeluarJumlah').value);
+  const keterangan=document.getElementById('tikKeluarKet').value.trim()||'Setoran';
+  if(!jumlah){alert('Mohon isi jumlah.');return}
+  if(tikEditKeluarId){
+    const item=tikState.pengeluaran.find(p=>p.id===tikEditKeluarId);
+    if(item){Object.assign(item,{jumlah,keterangan});}
+    tikEditKeluarId=null;
+  } else {
+    const tgl=new Date().toISOString().slice(0,10);
+    tikState.pengeluaran.push({id:tikState.nextKeluarId++,tanggal:tgl,bulanPembukuan:tgl.slice(0,7),jumlah,keterangan});
+  }
+  saveTik();tikResetFormKeluar();renderTik();tikShow('rekap')
+}
+function tikResetFormKeluar(){
+  tikEditKeluarId=null;
+  document.getElementById('tikKeluarFormTitle').textContent='Input Pengeluaran TIK';
+  document.getElementById('tikBtnSubmitKeluar').textContent='+ Simpan';
+  document.getElementById('tikBtnCancelKeluar').style.display='none';
+  document.getElementById('tikKeluarTanggal').value=todayText();
+  document.getElementById('tikKeluarKet').value='Setoran';
+  document.getElementById('tikKeluarJumlah').value='';
+}
+function tikEditKeluar(id){
+  const p=tikState.pengeluaran.find(x=>x.id===id);
+  if(!p)return;
+  tikEditKeluarId=id;
+  document.getElementById('tikKeluarTanggal').value=fmtDate(p.tanggal);
+  document.getElementById('tikKeluarJumlah').value=Number(p.jumlah||0).toLocaleString('id-ID');
+  document.getElementById('tikKeluarKet').value=p.keterangan||'';
+  document.getElementById('tikKeluarFormTitle').textContent='Edit Pengeluaran TIK #'+id;
+  document.getElementById('tikBtnSubmitKeluar').textContent='Simpan Perubahan';
+  document.getElementById('tikBtnCancelKeluar').style.display='inline-flex';
+  tikShow('keluar');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function tikHapusKeluar(id){
+  if(!confirm('Hapus data pengeluaran ini?'))return;
+  tikState.pengeluaran=tikState.pengeluaran.filter(p=>p.id!==id);
+  saveTik();renderTik();
+}
 function tikHapusSiswa(index){
   const s=tikState.students[index];
   if(!s)return;
