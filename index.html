@@ -279,18 +279,14 @@ section.panel{display:none!important;visibility:hidden!important;position:static
 section.panel.print-active{display:block!important;visibility:visible!important}
 .top, #tikApp .tik-top{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;width:100%!important;min-height:0!important;margin:0 0 4mm!important;padding:0 0 2.5mm!important;border-bottom:1px solid #666!important;box-shadow:none!important}
 body.printing-tik-rekap header.top:not(.tik-top), body.printing-tik-rincian header.top:not(.tik-top), body.printing-tik-all header.top:not(.tik-top){display:none!important}
-/* Header cetak TIK dibuat mengikuti proporsi header Kas: lebih tinggi, lega, dan tidak terpotong. */
-body.printing-tik-rekap #tikApp header.tik-top, body.printing-tik-rincian #tikApp header.tik-top, body.printing-tik-all #tikApp header.tik-top{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10mm!important;flex-wrap:nowrap!important;width:100%!important;box-sizing:border-box!important;min-height:0!important;height:auto!important;margin:0 0 4mm!important;padding:4mm 5mm!important;border:0!important;border-radius:3mm!important;background:linear-gradient(135deg,#2b7564 0%,#1F5D50 100%)!important;color:#fff!important;position:relative!important;overflow:hidden!important;box-shadow:none!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-body.printing-tik-rekap #tikApp header.tik-top::before, body.printing-tik-rincian #tikApp header.tik-top::before, body.printing-tik-all #tikApp header.tik-top::before{content:""!important;position:absolute!important;left:50%!important;bottom:-18mm!important;width:35mm!important;height:35mm!important;border-radius:50%!important;background:rgba(255,255,255,.05)!important}
-body.printing-tik-rekap #tikApp header.tik-top::after, body.printing-tik-rincian #tikApp header.tik-top::after, body.printing-tik-all #tikApp header.tik-top::after{content:""!important;position:absolute!important;right:-10mm!important;top:-10mm!important;width:35mm!important;height:35mm!important;border-radius:50%!important;background:rgba(217,164,65,.14)!important}
-body.printing-tik-rekap #tikApp .top-title, body.printing-tik-rincian #tikApp .top-title, body.printing-tik-all #tikApp .top-title{position:relative!important;z-index:1!important;flex:1 1 auto!important;min-width:0!important}
-body.printing-tik-rekap #tikApp .top-title h1, body.printing-tik-rincian #tikApp .top-title h1, body.printing-tik-all #tikApp .top-title h1{font-size:17pt!important;margin:0!important;line-height:1.08!important;white-space:nowrap!important}
-body.printing-tik-rekap #tikApp .top-title .eyebrow, body.printing-tik-rincian #tikApp .top-title .eyebrow, body.printing-tik-all #tikApp .top-title .eyebrow{display:block!important;font-size:7pt!important;letter-spacing:.14em!important;line-height:1.15!important;margin:0 0 1.2mm!important;color:var(--amber)!important;font-weight:700!important;text-transform:uppercase!important}
-body.printing-tik-rekap #tikApp .top-title .period, body.printing-tik-rincian #tikApp .top-title .period, body.printing-tik-all #tikApp .top-title .period{font-size:7.2pt!important;margin-top:1.2mm!important;line-height:1.1!important;color:rgba(255,255,255,.8)!important}
-body.printing-tik-rekap #tikApp .top-stats, body.printing-tik-rincian #tikApp .top-stats, body.printing-tik-all #tikApp .top-stats{position:relative!important;z-index:1!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:5mm!important;flex:0 0 auto!important;white-space:nowrap!important}
-body.printing-tik-rekap #tikApp .top-stat, body.printing-tik-rincian #tikApp .top-stat, body.printing-tik-all #tikApp .top-stat{min-width:24mm!important;padding:0!important;text-align:right!important}
-body.printing-tik-rekap #tikApp .top-stat .num, body.printing-tik-rincian #tikApp .top-stat .num, body.printing-tik-all #tikApp .top-stat .num{font-size:11pt!important;line-height:1!important;font-weight:700!important;color:#fff!important}
-body.printing-tik-rekap #tikApp .top-stat .lbl, body.printing-tik-rincian #tikApp .top-stat .lbl, body.printing-tik-all #tikApp .top-stat .lbl{font-size:6pt!important;line-height:1.1!important;margin-top:1mm!important;color:rgba(255,255,255,.68)!important;letter-spacing:.06em!important}
+.top-title h1{font-size:15pt!important;margin:0!important;line-height:1.1!important}
+.top-title .eyebrow{display:none;font-size:7.5pt!important}
+.top-title .period{font-size:7.5pt!important;margin-top:1px}
+.top-title .sub{font-size:7.5pt!important}
+.top-stats{gap:3mm!important;display:flex!important}
+.top-stat{min-width:24mm!important;padding:0 1mm!important}
+.top-stat .num{font-size:8.5pt!important}
+.top-stat .lbl{font-size:6.5pt!important}
 .card{box-shadow:none!important;border:0!important;width:100%!important;max-width:none!important;margin:0 0 3mm!important;padding:0!important;background:#fff!important}
 .card h2{margin:0 0 1.5mm!important;font-size:10pt!important;line-height:1.15!important}
 .tbl-wrap, .month-tbl-wrap{max-height:none!important;height:auto!important;overflow:visible!important}
@@ -332,369 +328,7 @@ button[onclick*="pemasukan"] span, button[onclick*="pengeluaran"] span, button[o
   <div style="width:38px;height:38px;border-radius:50%;border:3px solid #DAD3C0;border-top-color:#1F5D50;animation:cloudspin 0.8s linear infinite;"></div>
   <div style="font-family:'Inter',-apple-system,sans-serif;color:#615C50;font-size:13.5px;font-weight:600;">Memuat data terbaru...</div>
 </div>
-<style>@keyframes cloudspin{to{transform:rotate(360deg)}}
-/* ===================== PRINT KAS - HEADER ===================== */
-@media print{
-  /* Header Kas dibuat seimbang dengan header TIK: label, judul, periode, dan 3 statistik
-     tetap terbaca jelas tanpa membuat banner terlalu tinggi. */
-  body.printing-rekap-only header.top,
-  body.printing-rincian header.top,
-  body.printing-kas-all header.top{
-    display:flex!important;
-    align-items:center!important;
-    justify-content:space-between!important;
-    gap:10mm!important;
-    flex-wrap:nowrap!important;
-    width:100%!important;
-    box-sizing:border-box!important;
-    min-height:0!important;
-    height:auto!important;
-    margin:0 0 4mm!important;
-    padding:4mm 5mm!important;
-    border:0!important;
-    border-radius:3mm!important;
-    background:linear-gradient(135deg,#2b7564 0%,#1F5D50 100%)!important;
-    color:#fff!important;
-    position:relative!important;
-    overflow:hidden!important;
-    box-shadow:none!important;
-    -webkit-print-color-adjust:exact!important;
-    print-color-adjust:exact!important;
-  }
-  body.printing-rekap-only header.top::before,
-  body.printing-rincian header.top::before,
-  body.printing-kas-all header.top::before{
-    content:""!important;
-    position:absolute!important;
-    left:50%!important;
-    bottom:-18mm!important;
-    width:35mm!important;
-    height:35mm!important;
-    border-radius:50%!important;
-    background:rgba(255,255,255,.05)!important;
-  }
-  body.printing-rekap-only header.top::after,
-  body.printing-rincian header.top::after,
-  body.printing-kas-all header.top::after{
-    content:""!important;
-    position:absolute!important;
-    right:-10mm!important;
-    top:-10mm!important;
-    width:35mm!important;
-    height:35mm!important;
-    border-radius:50%!important;
-    background:rgba(217,164,65,.14)!important;
-  }
-  body.printing-rekap-only header.top .top-title,
-  body.printing-rincian header.top .top-title,
-  body.printing-kas-all header.top .top-title{
-    position:relative!important;
-    z-index:1!important;
-    flex:1 1 auto!important;
-    min-width:0!important;
-  }
-  body.printing-rekap-only header.top .top-title h1,
-  body.printing-rincian header.top .top-title h1,
-  body.printing-kas-all header.top .top-title h1{
-    font-size:17pt!important;
-    margin:0!important;
-    line-height:1.08!important;
-    white-space:nowrap!important;
-    color:#fff!important;
-  }
-  body.printing-rekap-only header.top .top-title .eyebrow,
-  body.printing-rincian header.top .top-title .eyebrow,
-  body.printing-kas-all header.top .top-title .eyebrow{
-    display:block!important;
-    font-size:7pt!important;
-    letter-spacing:.14em!important;
-    line-height:1.15!important;
-    margin:0 0 1.2mm!important;
-    color:var(--amber)!important;
-    font-weight:700!important;
-    text-transform:uppercase!important;
-  }
-  body.printing-rekap-only header.top .top-title .period,
-  body.printing-rincian header.top .top-title .period,
-  body.printing-kas-all header.top .top-title .period{
-    font-size:7.2pt!important;
-    margin-top:1.2mm!important;
-    line-height:1.1!important;
-    color:rgba(255,255,255,.8)!important;
-  }
-  body.printing-rekap-only header.top .top-stats,
-  body.printing-rincian header.top .top-stats,
-  body.printing-kas-all header.top .top-stats{
-    position:relative!important;
-    z-index:1!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:flex-end!important;
-    gap:5mm!important;
-    flex:0 0 auto!important;
-    white-space:nowrap!important;
-  }
-  body.printing-rekap-only header.top .top-stat,
-  body.printing-rincian header.top .top-stat,
-  body.printing-kas-all header.top .top-stat{
-    min-width:27mm!important;
-    padding:0!important;
-    text-align:right!important;
-  }
-  body.printing-rekap-only header.top .top-stat .num,
-  body.printing-rincian header.top .top-stat .num,
-  body.printing-kas-all header.top .top-stat .num{
-    font-size:11pt!important;
-    line-height:1!important;
-    font-weight:700!important;
-    color:#fff!important;
-  }
-  body.printing-rekap-only header.top .top-stat .lbl,
-  body.printing-rincian header.top .top-stat .lbl,
-  body.printing-kas-all header.top .top-stat .lbl{
-    font-size:6pt!important;
-    line-height:1.1!important;
-    margin-top:1mm!important;
-    color:rgba(255,255,255,.68)!important;
-    letter-spacing:.06em!important;
-  }
-}
-
-/* ===================== PRINT TIK - SAMAKAN DENGAN KAS ===================== */
-@media print{
-  /* TIK print: sembunyikan seluruh panel Kas yang berada di luar #tikApp.
-     #panel-rekap Kas memiliki class print-active secara default, sehingga
-     aturan section.panel:not(.print-active) saja tidak cukup. */
-  body.printing-tik-rekap .app > section.panel,
-  body.printing-tik-rincian .app > section.panel,
-  body.printing-tik-all .app > section.panel{
-    display:none!important;
-    visibility:hidden!important;
-  }
-
-  /* Pastikan KPI Kas (#rekapKpiGrid) tidak pernah ikut ke hasil cetak TIK. */
-  body.printing-tik-rekap #rekapKpiGrid,
-  body.printing-tik-rincian #rekapKpiGrid,
-  body.printing-tik-all #rekapKpiGrid{
-    display:none!important;
-    visibility:hidden!important;
-    height:0!important;
-    max-height:0!important;
-    overflow:hidden!important;
-    margin:0!important;
-    padding:0!important;
-  }
-
-  /* Cetak Rekap TIK: pola layout mengikuti Cetak Rekap Kas */
-  body.printing-tik-rekap #tik-rekap.print-active,
-  body.printing-tik-rekap #tik-siswa.print-active{
-    margin:0!important;
-    padding:0!important;
-    page-break-before:avoid!important;
-    page-break-after:avoid!important;
-    break-before:avoid-page!important;
-    break-after:avoid-page!important;
-  }
-  body.printing-tik-rekap #tik-rekap.print-active{
-    display:block!important;
-    order:1!important;
-  }
-  body.printing-tik-rekap #tik-siswa.print-active{
-    display:block!important;
-    order:2!important;
-    break-before:avoid!important;
-    page-break-before:avoid!important;
-    margin-top:0!important;
-  }
-  body.printing-tik-rekap #tik-rekap .rekap-actions,
-  body.printing-tik-rekap #tik-rekap .no-print,
-  body.printing-tik-rekap #tik-siswa .no-print{
-    display:none!important;
-  }
-  body.printing-tik-rekap #tik-rekap .kpi-grid{
-    display:none!important;
-    visibility:hidden!important;
-    height:0!important;
-    margin:0!important;
-    padding:0!important;
-    overflow:hidden!important;
-  }
-  body.printing-tik-rekap #tik-rekap .card{
-    display:block!important;
-    margin-top:0!important;
-    margin-bottom:2.5mm!important;
-    padding:5px 7px!important;
-  }
-  body.printing-tik-rekap #tik-rekap .card h2{
-    font-size:10px!important;
-    margin:0 0 3px!important;
-  }
-  body.printing-tik-rekap #tik-rekap table{
-    width:100%!important;
-    table-layout:fixed!important;
-    border-collapse:collapse!important;
-  }
-  /* Tabel Ringkasan TIK: samakan ketegasan garis dengan Ringkasan Kas.
-     Sebelumnya terkena rule umum print (border #888 1px + padding sangat tipis),
-     sehingga garis tabel terlihat pucat/tipis pada hasil cetak. */
-  body.printing-tik-rekap #tik-rekap table th,
-  body.printing-tik-rekap #tik-rekap table td{
-    padding:2px 4px!important;
-    font-size:7px!important;
-    line-height:1.1!important;
-    border:1px solid var(--teal-dark)!important;
-  }
-  body.printing-tik-rekap #tik-rekap table thead th{
-    background:var(--teal-tint)!important;
-    color:var(--teal-dark)!important;
-    font-weight:800!important;
-    -webkit-print-color-adjust:exact!important;
-    print-color-adjust:exact!important;
-  }
-  body.printing-tik-rekap #tik-rekap table tbody td{
-    color:#111!important;
-  }
-
-  /* Data Siswa TIK: ukuran, kolom dan kepadatan sama dengan Data Siswa Kas */
-  body.printing-tik-rekap #tik-siswa .card{
-    padding:5px 7px!important;
-    margin:0!important;
-  }
-  body.printing-tik-rekap #tik-siswa .card h2{
-    font-size:10px!important;
-    margin:0 0 2px!important;
-  }
-  body.printing-tik-rekap #tik-siswa .tbl-wrap{
-    max-height:none!important;
-    height:auto!important;
-    overflow:visible!important;
-    border:1px solid #999!important;
-    width:100%!important;
-  }
-  body.printing-tik-rekap #tblSiswaTik{
-    width:100%!important;
-    max-width:100%!important;
-    margin:0!important;
-    table-layout:fixed!important;
-    border-collapse:collapse!important;
-  }
-  body.printing-tik-rekap #tblSiswaTik th:nth-child(1),
-  body.printing-tik-rekap #tblSiswaTik td:nth-child(1){width:3.1%!important}
-  body.printing-tik-rekap #tblSiswaTik th:nth-child(2),
-  body.printing-tik-rekap #tblSiswaTik td:nth-child(2){width:16.5%!important}
-  body.printing-tik-rekap #tblSiswaTik th:nth-child(n+4):not(:last-child),
-  body.printing-tik-rekap #tblSiswaTik td:nth-child(n+4):not(:last-child){
-    width:6.4%!important;
-    min-width:0!important;
-    max-width:none!important;
-  }
-  body.printing-tik-rekap #tblSiswaTik th:last-child,
-  body.printing-tik-rekap #tblSiswaTik td:last-child{display:none!important}
-  body.printing-tik-rekap #tblSiswaTik th:nth-child(3),
-  body.printing-tik-rekap #tblSiswaTik td:nth-child(3){
-    width:9.4%!important;
-    min-width:0!important;
-    max-width:none!important;
-    white-space:normal!important;
-    overflow:hidden!important;
-  }
-  body.printing-tik-rekap #tblSiswaTik td:nth-child(3) .rp-cell{
-    display:flex!important;
-    align-items:center!important;
-    justify-content:space-between!important;
-    gap:2px!important;
-    width:100%!important;
-    min-width:0!important;
-    max-width:100%!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-align:right!important;
-    line-height:1.1!important;
-  }
-  body.printing-tik-rekap #tblSiswaTik td:nth-child(3) .rp-label,
-  body.printing-tik-rekap #tblSiswaTik td:nth-child(3) .rp-value{
-    font-size:6.5px!important;
-    flex:0 0 auto!important;
-    white-space:nowrap!important;
-  }
-  body.printing-tik-rekap #tblSiswaTik th,
-  body.printing-tik-rekap #tblSiswaTik td{
-    padding:3px 3px!important;
-    font-size:7.2px!important;
-    line-height:1.15!important;
-    border:1px solid var(--teal-dark)!important;
-  }
-  body.printing-tik-rekap #tblSiswaTik thead,
-  body.printing-tik-rekap #tblSiswaTik thead tr{
-    -webkit-print-color-adjust:exact!important;
-    print-color-adjust:exact!important;
-  }
-  body.printing-tik-rekap #tblSiswaTik thead th{
-    position:static!important;
-    background:var(--teal-dark)!important;
-    color:#fff!important;
-    -webkit-print-color-adjust:exact!important;
-    print-color-adjust:exact!important;
-  }
-  body.printing-tik-rekap #tblSiswaTik tbody tr.total-row td{
-    background:var(--teal-dark)!important;
-    color:#fff!important;
-    -webkit-print-color-adjust:exact!important;
-    print-color-adjust:exact!important;
-  }
-  body.printing-tik-rekap #tblSiswaTik .paid{
-    color:var(--teal)!important;
-    -webkit-print-color-adjust:exact!important;
-    print-color-adjust:exact!important;
-  }
-  body.printing-tik-rekap #tblSiswaTik td.paid-cell{
-    background:#e8f4ee!important;
-    -webkit-print-color-adjust:exact!important;
-    print-color-adjust:exact!important;
-  }
-  body.printing-tik-rekap #tblSiswaTik tbody td:nth-child(1),
-  body.printing-tik-rekap #tblSiswaTik tbody td:nth-child(2),
-  body.printing-tik-rekap #tblSiswaTik tbody td:nth-child(3){color:var(--teal-dark)!important}
-  body.printing-tik-rekap #tblSiswaTik tbody tr{page-break-inside:avoid!important;break-inside:avoid!important}
-  body.printing-tik-rekap #tblSiswaTik .name-cell{white-space:nowrap!important}
-
-  /* Cetak Rincian TIK: tetap mengikuti pola Rincian Kas */
-  body.printing-tik-rincian #tik-masuk,
-  body.printing-tik-rincian #tik-keluar{
-    display:block!important;
-    visibility:visible!important;
-    width:100%!important;
-    max-width:none!important;
-  }
-  body.printing-tik-rincian #tik-masuk .card:first-child,
-  body.printing-tik-rincian #tik-keluar .card:first-child{
-    display:none!important;
-  }
-
-  /* Cetak Semua TIK: urutan Rekap + Siswa, lalu Rincian mulai halaman baru */
-  body.printing-tik-all #tik-rekap,
-  body.printing-tik-all #tik-siswa,
-  body.printing-tik-all #tik-masuk,
-  body.printing-tik-all #tik-keluar{
-    display:block!important;
-    visibility:visible!important;
-    width:100%!important;
-    max-width:none!important;
-  }
-  body.printing-tik-all #tik-rekap .kpi-grid{
-    display:none!important;
-  }
-  body.printing-tik-all #tik-rekap .rekap-actions,
-  body.printing-tik-all #tik-rekap .no-print,
-  body.printing-tik-all #tik-siswa .no-print{
-    display:none!important;
-  }
-  body.printing-tik-all #tik-masuk.cetak-break-before{
-    page-break-before:always!important;
-    break-before:page!important;
-  }
-}
-</style>
+<style>@keyframes cloudspin{to{transform:rotate(360deg)}}</style>
 <div class="app">
 <div id="syncStatus" style="position:absolute;bottom:10px;right:14px;background:transparent;padding:0;border-radius:0;font-size:11px;font-weight:600;box-shadow:none;z-index:5;display:none;align-items:center;gap:5px;letter-spacing:.02em;"></div>
 
@@ -1001,11 +635,43 @@ function yr2(label){ return (label||'').replace(/(\d{4})/g, y=>y.slice(2)); }
 // ===================== SYNC KE GOOGLE SHEETS =====================
 const CLOUD_URL = 'https://script.google.com/macros/s/AKfycbx46aUZRTp_r_KEyjXqoYuaFL3Gck92AW3d8djGvs8lpaj5pluUdOccv9-jQHHWZ2Rmpg/exec';
 
+// =====================================================================
+// DATABASE CLOUD v2 — Google Sheets sekarang memakai tabel terpisah.
+// Kontrak data aplikasi TETAP sama: {students,pemasukan,pengeluaran,...}
+// sehingga UI/render/cetak tidak perlu tahu detail nama sheet database.
+// Apps Script menangani pemetaan:
+//   Kas -> Kas - Data Siswa / Kas - Pemasukan / Kas - Pengeluaran
+//   TIK -> TIK - Data Siswa / TIK - Pemasukan / TIK - Pengeluaran
+// =====================================================================
+const CLOUD_SCHEMA_VERSION = 2;
+
+function isValidCloudState(data){
+  return !!(data &&
+    Array.isArray(data.students) &&
+    Array.isArray(data.pemasukan) &&
+    Array.isArray(data.pengeluaran));
+}
+
 async function cloudPull(sheet){
   try{
-    const res = await fetch(CLOUD_URL + '?sheet=' + sheet + '&t=' + Date.now());
+    const res = await fetch(CLOUD_URL + '?sheet=' + encodeURIComponent(sheet) + '&t=' + Date.now());
     const json = await res.json();
-    return (json && json.data) ? json.data : null;
+
+    // Backend v2 tetap mengembalikan bentuk state lama agar kompatibel
+    // dengan seluruh fungsi aplikasi yang sudah ada.
+    if(json && json.success && isValidCloudState(json.data)){
+      return json.data;
+    }
+
+    // Kompatibel dengan backend lama yang hanya mengembalikan {data}.
+    if(json && isValidCloudState(json.data)){
+      return json.data;
+    }
+
+    if(json && json.error){
+      console.warn('Cloud '+sheet+': '+json.error);
+    }
+    return null;
   }catch(e){
     console.warn('Gagal ambil data cloud ('+sheet+'):', e);
     return null;
@@ -1098,6 +764,8 @@ function backfillKeterangan(){
 }
 function saveState(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  // cloudPush tetap mengirim state yang sama; Apps Script v2 yang
+  // memecahnya ke tabel-tabel database Google Sheets.
   cloudPush('Kas', state);
 }
 
@@ -2019,6 +1687,8 @@ async function loadTik(){
 }
 function saveTik(){
   localStorage.setItem(TIK_STORAGE_KEY,JSON.stringify(tikState));
+  // cloudPush tetap memakai kontrak lama agar versi Apps Script v1/v2
+  // sama-sama dapat digunakan saat transisi database.
   cloudPush('TIK', tikState);
 }
 function tikShow(which){
@@ -2235,87 +1905,6 @@ function buildShareText(mode){
   const keluar=tikState.pengeluaran.reduce((a,b)=>a+Number(b.jumlah||0),0);
   return `*Rekap TIK Kelas 3B*\nAgustus 2026 – Mei 2027\n\nTotal Masuk: ${rp(masuk)}\nTotal Keluar: ${rp(keluar)}\nTIK Tersedia: ${rp(masuk-keluar)}`;
 }
-function getPrintCssForShare(){
-  let css='';
-  for(const sheet of Array.from(document.styleSheets)){
-    try{
-      for(const rule of Array.from(sheet.cssRules||[])){
-        if(rule.type===CSSRule.MEDIA_RULE && /print/i.test(rule.conditionText||rule.media?.mediaText||'')){
-          for(const child of Array.from(rule.cssRules||[])){
-            if(child.type!==CSSRule.PAGE_RULE) css += child.cssText + '\n';
-          }
-        }
-      }
-    }catch(e){}
-  }
-  return css;
-}
-
-async function buildShareCanvases(mode){
-  await loadShareLibs();
-
-  const makePage = async (elements, bodyClass) => {
-    const wrap=document.createElement('div');
-    wrap.id='sharePrintSurface';
-    wrap.style.cssText='position:fixed;left:-100000px;top:0;width:794px;box-sizing:border-box;background:#fff;color:#111;padding:30px;z-index:-1;';
-
-    const printCss=document.createElement('style');
-    printCss.textContent=getPrintCssForShare();
-    wrap.appendChild(printCss);
-
-    document.body.classList.add('capturing-share',bodyClass);
-
-    elements.forEach(el=>{
-      if(!el)return;
-      const c=el.cloneNode(true);
-      if(c.classList.contains('panel')) c.classList.add('print-active');
-      wrap.appendChild(c);
-    });
-
-    document.body.appendChild(wrap);
-    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-    const canvas=await html2canvas(wrap,{backgroundColor:'#ffffff',scale:2,useCORS:true,logging:false,windowWidth:794});
-    wrap.remove();
-    document.body.classList.remove(bodyClass,'capturing-share');
-    return canvas;
-  };
-
-  const pages=[];
-  if(mode==='kas'){
-    const header=document.querySelector('header.top:not(.tik-top)');
-    const rekap=document.getElementById('panel-rekap');
-    const siswa=document.getElementById('panel-siswa');
-
-    // Bagikan PDF/Gambar mengikuti Cetak Rekap Kas:
-    // Header + Rekap + Data Siswa
-    pages.push(await makePage([header,rekap,siswa],'printing-rekap-only'));
-  }else{
-    const tik=document.getElementById('tikApp');
-    const header=tik ? tik.querySelector('header.tik-top') : null;
-    const rekap=document.getElementById('tik-rekap');
-    const siswa=document.getElementById('tik-siswa');
-
-    // Bagikan PDF/Gambar mengikuti Cetak Rekap TIK:
-    // Header + Rekap + Data Siswa TIK
-    pages.push(await makePage([header,rekap,siswa],'printing-tik-rekap'));
-  }
-  return pages;
-}
-
-async function buildShareCanvas(mode){
-  const pages=await buildShareCanvases(mode);
-  if(pages.length===1) return pages[0];
-  const width=Math.max(...pages.map(c=>c.width));
-  const gap=24;
-  const height=pages.reduce((sum,c)=>sum+c.height,0)+gap*(pages.length-1);
-  const canvas=document.createElement('canvas');
-  canvas.width=width; canvas.height=height;
-  const ctx=canvas.getContext('2d');
-  ctx.fillStyle='#fff'; ctx.fillRect(0,0,width,height);
-  let y=0;
-  pages.forEach((c,i)=>{ctx.drawImage(c,0,y); y+=c.height; if(i<pages.length-1)y+=gap;});
-  return canvas;
-}
 async function shareRekap(mode,type){
   togglePrintMenu(mode==='kas'?'kasShareMenu':'tikShareMenu');
   if(type==='teks'){
@@ -2328,8 +1917,13 @@ async function shareRekap(mode,type){
     return;
   }
   const fileBase=mode==='kas'?'Rekap_Kas_Kelas_3B':'Rekap_TIK_Kelas_3B';
+  const targetId=mode==='kas'?'panel-rekap':'tik-rekap';
   try{
-    const canvas=await buildShareCanvas(mode);
+    await loadShareLibs();
+    const el=document.getElementById(targetId);
+    document.body.classList.add('capturing-share');
+    const canvas=await html2canvas(el,{backgroundColor:'#ffffff',scale:2});
+    document.body.classList.remove('capturing-share');
     if(type==='gambar'){
       canvas.toBlob(async blob=>{
         const file=new File([blob],fileBase+'.png',{type:'image/png'});
@@ -2339,11 +1933,9 @@ async function shareRekap(mode,type){
         downloadBlob(blob,fileBase+'.png');
       },'image/png');
     } else if(type==='pdf'){
-      // Gunakan CANVAS YANG SAMA persis dengan Bagikan Gambar,
-      // sehingga hasil visual PDF dan PNG benar-benar identik.
       const {jsPDF}=window.jspdf;
-      const pdf=new jsPDF({unit:'px',format:[canvas.width,canvas.height],compress:true});
-      pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,canvas.width,canvas.height,undefined,'FAST');
+      const pdf=new jsPDF({unit:'px',format:[canvas.width,canvas.height]});
+      pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,canvas.width,canvas.height);
       const blob=pdf.output('blob');
       const file=new File([blob],fileBase+'.pdf',{type:'application/pdf'});
       if(navigator.canShare && navigator.canShare({files:[file]})){
@@ -2353,8 +1945,6 @@ async function shareRekap(mode,type){
     }
   }catch(err){
     document.body.classList.remove('capturing-share');
-    document.body.classList.remove('printing-rekap-only','printing-tik-rekap');
-    const surface=document.getElementById('sharePrintSurface'); if(surface) surface.remove();
     console.error(err);
     alert('Gagal membuat file untuk dibagikan. Pastikan koneksi internet aktif, atau gunakan tombol Cetak sebagai alternatif.');
   }
