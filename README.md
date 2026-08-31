@@ -1,10 +1,10 @@
 # Kas Kelas 3B — Agustus 2026 s.d. Juni 2027
 
-Aplikasi web satu-file (`index_clean-2.html`) untuk mencatat dan merekap kas kelas serta iuran TIK. Tidak butuh server atau instalasi — cukup dibuka lewat browser.
+Aplikasi web satu-file (`index.html`) untuk mencatat dan merekap kas kelas serta iuran TIK. Tidak butuh server atau instalasi — cukup dibuka lewat browser.
 
 ## Cara Pakai
 
-1. Buka file `index_clean-2.html` di browser (Chrome/Safari, desktop maupun HP).
+1. Buka file `index.html` di browser (Chrome/Safari, desktop maupun HP).
 2. Semua data otomatis tersimpan di browser (localStorage) setiap kali ada perubahan — tidak perlu tombol "Simpan" terpisah.
 3. Karena datanya tersimpan di browser, buka file ini dari **perangkat/browser yang sama** setiap kali supaya data tidak hilang atau tidak "ganda" antar device.
 
