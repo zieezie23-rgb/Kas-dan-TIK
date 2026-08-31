@@ -1951,7 +1951,6 @@ function isFormBeingEdited(){
 async function autoSyncTick(){
   if(autoSyncBusy || isFormBeingEdited()) return;
   autoSyncBusy = true;
-  setSyncStatus('syncing');
   try{
     const tikMode = document.getElementById('modeTikBtn');
     const inTikMode = tikMode && tikMode.classList.contains('active');
