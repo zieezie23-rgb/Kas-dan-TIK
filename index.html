@@ -1791,7 +1791,7 @@ function tikSimpanMasuk(){
     const tgl=new Date().toISOString().slice(0,10);
     tikState.pemasukan.push({id:tikState.nextMasukId++,nama,tanggalBayar:tgl,bulanPembukuan:tgl.slice(0,7),bulanDari:dari,bulanSampai:sampai,jumlahBulan:Math.abs(monthIndex(sampai)-monthIndex(dari))+1,jumlah,keterangan});
   }
-  saveTik();tikResetFormMasuk();renderTik();tikShow('rekap')
+  saveTik();tikResetFormMasuk();renderTik();tikShow('masuk')
 }
 function tikResetFormMasuk(){
   tikEditMasukId=null;
@@ -1837,7 +1837,7 @@ function tikSimpanKeluar(){
     const tgl=new Date().toISOString().slice(0,10);
     tikState.pengeluaran.push({id:tikState.nextKeluarId++,tanggal:tgl,bulanPembukuan:tgl.slice(0,7),jumlah,keterangan});
   }
-  saveTik();tikResetFormKeluar();renderTik();tikShow('rekap')
+  saveTik();tikResetFormKeluar();renderTik();tikShow('keluar')
 }
 function tikResetFormKeluar(){
   tikEditKeluarId=null;
